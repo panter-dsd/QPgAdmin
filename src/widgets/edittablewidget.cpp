@@ -21,6 +21,7 @@ EditTableWidget::EditTableWidget (const QString& connectionName, const QString& 
 	view = new QTableView (this);
 	view->setModel (model);
 	view->setContextMenuPolicy (Qt::ActionsContextMenu);
+	view->setSortingEnabled (true);
 
 	toolBar = new QToolBar (this);
 
