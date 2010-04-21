@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/">
+        <file>share/images/about.png</file>
+        <file>share/images/aboutQt.png</file>
+        <file>share/images/exit.png</file>
+        <file>share/images/open.png</file>
+        <file>share/images/preferences.png</file>
+        <file>share/images/print.png</file>
+        <file>share/images/close.png</file>
+        <file>share/images/refresh.png</file>
+        <file>share/images/remove.png</file>
+        <file>share/images/add.png</file>
+        <file>share/images/filter.png</file>
+        <file>share/images/find.png</file>
+        <file>share/images/preview.png</file>
+        <file>share/images/removefilter.png</file>
+        <file>share/images/copy.png</file>
+        <file>share/images/edit.png</file>
+        <file>LICENSE.GPL3</file>
+        <file>share/images/save.png</file>
+        <file>share/images/undo.png</file>
+    </qresource>
+</RCC>
