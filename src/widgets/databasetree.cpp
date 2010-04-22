@@ -162,7 +162,23 @@ void DatabaseTree::loadDatabases (QTreeWidgetItem *parent)
 		return;
 	}
 
-	QTreeWidgetItem *item;
+	QTreeWidgetItem *item = 0;
+	const QList<QTreeWidgetItem*> l = tree->findItems(tr ("Databases"), Qt::MatchFixedString | Qt::MatchRecursive, 0);
+	foreach (QTreeWidgetItem *i, l) {
+		if (i->parent() == parent) {
+			item = i;
+			break;
+		}
+	}
+	if (!item) {
+		item = new QTreeWidgetItem ();
+		item->setText(0, tr ("Databases"));
+		item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+
+		parent->addChild(item);
+	}
+	parent = item;
+
 	while (query.next()) {
 		item = 0;
 		const QList<QTreeWidgetItem*> l = tree->findItems(query.value(0).toString(), Qt::MatchFixedString | Qt::MatchRecursive, 0);
@@ -172,7 +188,7 @@ void DatabaseTree::loadDatabases (QTreeWidgetItem *parent)
 				break;
 			}
 		}
-		
+
 		if (!item) {
 			item = new QTreeWidgetItem ();
 			item->setText(0, query.value(0).toString());
@@ -181,13 +197,12 @@ void DatabaseTree::loadDatabases (QTreeWidgetItem *parent)
 
 			parent->addChild(item);
 		}
-		if (QSqlDatabase::database(parent->text(0) + "." + item->text(0)).isOpen()) {
+		if (QSqlDatabase::database(parent->parent ()->text(0) + "." + item->text(0)).isOpen()) {
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/database.png"));
-			loadSchemes (parent->text(0) + "."  + item->text(0), item);
+			loadSchemes (parent->parent ()->text(0) + "."  + item->text(0), item);
 		} else {
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/disconnected-database.png"));
 		}
-
 	}
 }
 
@@ -421,7 +436,7 @@ void DatabaseTree::itemExpanded (QTreeWidgetItem *item)
 		}
 	}
 	if (item->data(0, Qt::UserRole).toString() == "DATABASE") {
-		const Connection& c = connections.at (item->parent()->data(1, Qt::UserRole).toInt());
+		const Connection& c = connections.at (item->parent()->parent ()->data(1, Qt::UserRole).toInt());
 		if (!QSqlDatabase::database(c.name + "." + item->text (0)).isOpen()) {
 			QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL", c.name + "."  + item->text (0));
 
@@ -467,6 +482,6 @@ void DatabaseTree::itemActivated (QTreeWidgetItem *item, int column)
 		while (parent->data(0, Qt::UserRole).toString() != "DATABASE") {
 			parent = parent->parent ();
 		}
-		emit openTable (parent->parent ()->text (0) + parent->text (0), item->text (0));
+		emit openTable (parent->parent ()->parent ()->text (0) + "." + parent->text (0), item->text (0));
 	}
 }
