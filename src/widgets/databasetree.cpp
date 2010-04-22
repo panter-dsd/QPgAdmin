@@ -120,6 +120,8 @@ void DatabaseTree::treeContextMenu (const QPoint& point)
 
 void DatabaseTree::loadTree ()
 {
+	QMap<QString, QVariant> options;
+	options ["Type"] = "Connection";
 
 	QTreeWidgetItem *item;
 
@@ -137,9 +139,8 @@ void DatabaseTree::loadTree ()
 		if (!item) {
 			item = new QTreeWidgetItem ();
 			item->setText(0, connections.at(i).name);
-
-			item->setData(0, Qt::UserRole, "CONNECTION");
-			item->setData(1, Qt::UserRole, i);
+			options ["Index"] = i;
+			item->setData (0, Qt::UserRole, options);
 			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 
 			tree->addTopLevelItem(item);
@@ -156,6 +157,10 @@ void DatabaseTree::loadTree ()
 
 void DatabaseTree::loadDatabases (QTreeWidgetItem *parent)
 {
+	QMap<QString, QVariant> options = parent->data (0, Qt::UserRole).value<QMap<QString, QVariant> > ();
+	options ["Type"] = "Database";
+	options ["ConnectionName"] = parent->text(0);
+
 	QSqlQuery query (QSqlDatabase::database(parent->text(0)));
 	if (!query.exec("SELECT datname FROM pg_database")) {
 		QMessageBox::critical(this, "", query.lastError().text());
@@ -173,6 +178,7 @@ void DatabaseTree::loadDatabases (QTreeWidgetItem *parent)
 	if (!item) {
 		item = new QTreeWidgetItem ();
 		item->setText(0, tr ("Databases"));
+
 		item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 
 		parent->addChild(item);
@@ -192,23 +198,28 @@ void DatabaseTree::loadDatabases (QTreeWidgetItem *parent)
 		if (!item) {
 			item = new QTreeWidgetItem ();
 			item->setText(0, query.value(0).toString());
-			item->setData(0, Qt::UserRole, "DATABASE");
+			item->setData (0, Qt::UserRole, options);
+
 			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 
 			parent->addChild(item);
 		}
 		if (QSqlDatabase::database(parent->parent ()->text(0) + "." + item->text(0)).isOpen()) {
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/database.png"));
-			loadSchemes (parent->parent ()->text(0) + "."  + item->text(0), item);
+			loadSchemes (item);
 		} else {
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/disconnected-database.png"));
 		}
 	}
 }
 
-void DatabaseTree::loadSchemes (const QString& connectionName, QTreeWidgetItem *parent)
+void DatabaseTree::loadSchemes (QTreeWidgetItem *parent)
 {
-	QSqlQuery query (QSqlDatabase::database(connectionName));
+	QMap<QString, QVariant> options = parent->data (0, Qt::UserRole).value <QMap<QString, QVariant> > ();
+	options ["Type"] = "Scheme";
+	options ["ConnectionName"] = options ["ConnectionName"].toString () + "." + parent->text (0);
+
+	QSqlQuery query (QSqlDatabase::database(options ["ConnectionName"].toString ()));
 
 	if (!query.exec("SELECT nspname, oid FROM pg_namespace ORDER BY 1")) {
 		QMessageBox::critical(this, "", query.lastError().text());
@@ -246,23 +257,27 @@ void DatabaseTree::loadSchemes (const QString& connectionName, QTreeWidgetItem *
 		if (!item) {
 			item = new QTreeWidgetItem ();
 			item->setText(0, query.value(0).toString());
-			item->setData(0, Qt::UserRole, "SCHEME");
-			item->setData(0, Qt::UserRole + 1, query.value(1));
+			options ["ID"] = query.value(1);
+			options ["Scheme"] = query.value(0).toString ();
+			item->setData(0, Qt::UserRole, options);
 			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 
 			parent->addChild(item);
 		}
-		loadTables (connectionName, item);
-		loadViews (connectionName, item);
-		loadSequences (connectionName, item);
+		loadTables (item);
+		loadViews (item);
+		loadSequences (item);
 	}
 }
 
-void DatabaseTree::loadTables (const QString& connectionName, QTreeWidgetItem *parent)
+void DatabaseTree::loadTables (QTreeWidgetItem *parent)
 {
-	QSqlQuery query (QSqlDatabase::database(connectionName));
+	QMap<QString, QVariant> options = parent->data (0, Qt::UserRole).value<QMap<QString, QVariant> > ();
+	options ["Type"] = "Table";
+
+	QSqlQuery query (QSqlDatabase::database(options ["ConnectionName"].toString ()));
 	query.prepare("SELECT relname FROM pg_class WHERE relkind='r' AND relnamespace=:relnamespace ORDER BY 1");
-	query.bindValue (":relnamespace", parent->data (0, Qt::UserRole + 1).toInt ());
+	query.bindValue (":relnamespace", options ["ID"].toInt ());
 
 	if (!query.exec ()) {
 		QMessageBox::critical(this, "", query.lastError().text());
@@ -301,7 +316,7 @@ void DatabaseTree::loadTables (const QString& connectionName, QTreeWidgetItem *p
 		if (!item) {
 			item = new QTreeWidgetItem ();
 			item->setText(0, query.value(0).toString());
-			item->setData(0, Qt::UserRole, "TABLE");
+			item->setData(0, Qt::UserRole, options);
 			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 			item->setData (0, Qt::DecorationRole, QIcon (":/share/images/table.png"));
 
@@ -310,11 +325,14 @@ void DatabaseTree::loadTables (const QString& connectionName, QTreeWidgetItem *p
 	}
 }
 
-void DatabaseTree::loadViews (const QString& connectionName, QTreeWidgetItem *parent)
+void DatabaseTree::loadViews (QTreeWidgetItem *parent)
 {
-	QSqlQuery query (QSqlDatabase::database(connectionName));
+	QMap<QString, QVariant> options = parent->data (0, Qt::UserRole).value<QMap<QString, QVariant> > ();
+	options ["Type"] = "View";
+
+	QSqlQuery query (QSqlDatabase::database(options ["ConnectionName"].toString ()));
 	query.prepare("SELECT relname FROM pg_class WHERE relkind='v' AND relnamespace=:relnamespace ORDER BY 1");
-	query.bindValue (":relnamespace", parent->data (0, Qt::UserRole + 1).toInt ());
+	query.bindValue (":relnamespace", options ["ID"].toInt ());
 
 	if (!query.exec ()) {
 		QMessageBox::critical(this, "", query.lastError().text());
@@ -353,7 +371,7 @@ void DatabaseTree::loadViews (const QString& connectionName, QTreeWidgetItem *pa
 		if (!item) {
 			item = new QTreeWidgetItem ();
 			item->setText(0, query.value(0).toString());
-			item->setData(0, Qt::UserRole, "VIEW");
+			item->setData(0, Qt::UserRole, options);
 			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 			item->setData (0, Qt::DecorationRole, QIcon (":/share/images/view.png"));
 
@@ -362,11 +380,14 @@ void DatabaseTree::loadViews (const QString& connectionName, QTreeWidgetItem *pa
 	}
 }
 
-void DatabaseTree::loadSequences (const QString& connectionName, QTreeWidgetItem *parent)
+void DatabaseTree::loadSequences (QTreeWidgetItem *parent)
 {
-	QSqlQuery query (QSqlDatabase::database(connectionName));
+	QMap<QString, QVariant> options = parent->data (0, Qt::UserRole).value<QMap<QString, QVariant> > ();
+	options ["Type"] = "Sequence";
+
+	QSqlQuery query (QSqlDatabase::database(options ["ConnectionName"].toString ()));
 	query.prepare("SELECT relname FROM pg_class WHERE relkind='S' AND relnamespace=:relnamespace ORDER BY 1");
-	query.bindValue (":relnamespace", parent->data (0, Qt::UserRole + 1).toInt ());
+	query.bindValue (":relnamespace", options ["ID"].toInt ());
 
 	if (!query.exec ()) {
 		QMessageBox::critical(this, "", query.lastError().text());
@@ -405,7 +426,7 @@ void DatabaseTree::loadSequences (const QString& connectionName, QTreeWidgetItem
 		if (!item) {
 			item = new QTreeWidgetItem ();
 			item->setText(0, query.value(0).toString());
-			item->setData(0, Qt::UserRole, "SEQUENCES");
+			item->setData(0, Qt::UserRole, options);
 			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 			item->setData (0, Qt::DecorationRole, QIcon (":/share/images/sequence.png"));
 
@@ -416,9 +437,11 @@ void DatabaseTree::loadSequences (const QString& connectionName, QTreeWidgetItem
 
 void DatabaseTree::itemExpanded (QTreeWidgetItem *item)
 {
-	if (item->data(0, Qt::UserRole).toString() == "CONNECTION") {
+	QMap<QString, QVariant> options = item->data (0, Qt::UserRole).value<QMap<QString, QVariant> > ();
+
+	if (options ["Type"].toString () == "Connection") {
 		if (!QSqlDatabase::database(item->text(0)).isOpen()) {
-			const Connection& c = connections.at (item->data(1, Qt::UserRole).toInt());
+			const Connection& c = connections.at (options ["Index"].toInt ());
 
 			QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL", c.name);
 
@@ -435,8 +458,8 @@ void DatabaseTree::itemExpanded (QTreeWidgetItem *item)
 			}
 		}
 	}
-	if (item->data(0, Qt::UserRole).toString() == "DATABASE") {
-		const Connection& c = connections.at (item->parent()->parent ()->data(1, Qt::UserRole).toInt());
+	if (options ["Type"].toString () == "Database") {
+		const Connection& c = connections.at (options ["Index"].toInt());
 		if (!QSqlDatabase::database(c.name + "." + item->text (0)).isOpen()) {
 			QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL", c.name + "."  + item->text (0));
 
@@ -458,8 +481,10 @@ void DatabaseTree::itemExpanded (QTreeWidgetItem *item)
 
 void DatabaseTree::itemActivated (QTreeWidgetItem *item, int column)
 {
-	if (item->data(0, Qt::UserRole).toString() == "CONNECTION") {
-		int i = item->data(1, Qt::UserRole).toInt();
+	QMap<QString, QVariant> options = item->data (0, Qt::UserRole).value<QMap<QString, QVariant> > ();
+
+	if (options ["Type"].toString () == "Connection") {
+		const int i = options ["Index"].toInt ();
 		ConnectionDialog d (this);
 
 		d.setConnectionName(connections[i].name);
@@ -476,12 +501,9 @@ void DatabaseTree::itemActivated (QTreeWidgetItem *item, int column)
 			connections[i].password = d.password();
 		}
 	}
-	if (item->data(0, Qt::UserRole).toString() == "TABLE") {
+	if (options ["Type"].toString () == "Table") {
 		QTreeWidgetItem *parent = item;
 		
-		while (parent->data(0, Qt::UserRole).toString() != "DATABASE") {
-			parent = parent->parent ();
-		}
-		emit openTable (parent->parent ()->parent ()->text (0) + "." + parent->text (0), item->text (0));
+		emit openTable (options ["ConnectionName"].toString (), options ["Scheme"].toString () + "." + item->text (0));
 	}
 }

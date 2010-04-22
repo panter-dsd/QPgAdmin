@@ -59,10 +59,10 @@ private:
 	void retranslateStrings();
 	void loadTree ();
 	void loadDatabases (QTreeWidgetItem *parent);
-	void loadSchemes (const QString& connectionName, QTreeWidgetItem *parent);
-	void loadTables (const QString& connectionName, QTreeWidgetItem *parent);
-	void loadViews (const QString& connectionName, QTreeWidgetItem *parent);
-	void loadSequences (const QString& connectionName, QTreeWidgetItem *parent);
+	void loadSchemes (QTreeWidgetItem *parent);
+	void loadTables (QTreeWidgetItem *parent);
+	void loadViews (QTreeWidgetItem *parent);
+	void loadSequences (QTreeWidgetItem *parent);
 
 private Q_SLOTS:
 	void addConnection ();
