@@ -23,5 +23,10 @@
         <file>share/images/connect_established.png</file>
         <file>share/images/start.png</file>
         <file>share/images/stop.png</file>
+        <file>share/images/database.png</file>
+        <file>share/images/disconnected-database.png</file>
+        <file>share/images/table.png</file>
+        <file>share/images/view.png</file>
+        <file>share/images/sequence.png</file>
     </qresource>
 </RCC>

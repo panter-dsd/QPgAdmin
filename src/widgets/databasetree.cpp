@@ -182,7 +182,10 @@ void DatabaseTree::loadDatabases (QTreeWidgetItem *parent)
 			parent->addChild(item);
 		}
 		if (QSqlDatabase::database(parent->text(0) + "." + item->text(0)).isOpen()) {
+			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/database.png"));
 			loadSchemes (parent->text(0) + "."  + item->text(0), item);
+		} else {
+			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/disconnected-database.png"));
 		}
 
 	}
@@ -264,6 +267,7 @@ void DatabaseTree::loadTables (const QString& connectionName, QTreeWidgetItem *p
 		item = new QTreeWidgetItem ();
 		item->setText(0, tr ("Tables"));
 		item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+		item->setData (0, Qt::DecorationRole, QIcon (":/share/images/table.png"));
 		
 		parent->addChild(item);
 	}
@@ -284,6 +288,7 @@ void DatabaseTree::loadTables (const QString& connectionName, QTreeWidgetItem *p
 			item->setText(0, query.value(0).toString());
 			item->setData(0, Qt::UserRole, "TABLE");
 			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+			item->setData (0, Qt::DecorationRole, QIcon (":/share/images/table.png"));
 
 			parent->addChild(item);
 		}
@@ -314,6 +319,7 @@ void DatabaseTree::loadViews (const QString& connectionName, QTreeWidgetItem *pa
 		item = new QTreeWidgetItem ();
 		item->setText(0, tr ("Views"));
 		item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+		item->setData (0, Qt::DecorationRole, QIcon (":/share/images/view.png"));
 		
 		parent->addChild(item);
 	}
@@ -334,6 +340,7 @@ void DatabaseTree::loadViews (const QString& connectionName, QTreeWidgetItem *pa
 			item->setText(0, query.value(0).toString());
 			item->setData(0, Qt::UserRole, "VIEW");
 			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+			item->setData (0, Qt::DecorationRole, QIcon (":/share/images/view.png"));
 
 			parent->addChild(item);
 		}
@@ -364,6 +371,7 @@ void DatabaseTree::loadSequences (const QString& connectionName, QTreeWidgetItem
 		item = new QTreeWidgetItem ();
 		item->setText(0, tr ("Sequences"));
 		item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+		item->setData (0, Qt::DecorationRole, QIcon (":/share/images/sequence.png"));
 		
 		parent->addChild(item);
 	}
@@ -384,6 +392,7 @@ void DatabaseTree::loadSequences (const QString& connectionName, QTreeWidgetItem
 			item->setText(0, query.value(0).toString());
 			item->setData(0, Qt::UserRole, "SEQUENCES");
 			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+			item->setData (0, Qt::DecorationRole, QIcon (":/share/images/sequence.png"));
 
 			parent->addChild(item);
 		}
