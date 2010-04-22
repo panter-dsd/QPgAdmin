@@ -16,6 +16,7 @@
 
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQueryModel>
+#include <QtSql/QSqlError>
 
 #include "sqlquerywidget.h"
 #include "querythread.h"
@@ -81,7 +82,6 @@ SqlQueryWidget::SqlQueryWidget (const QString& connectionName, QWidget *parent)
 	actionStop = new QAction (this);
 	actionStop->setIcon (QIcon (":/share/images/stop.png"));
 	actionStop->setEnabled (false);
-	connect (actionStop, SIGNAL (triggered ()), this, SLOT (stop ()));
 	toolBar->addAction (actionStop);
 
 	toolBar->addSeparator ();
@@ -227,11 +227,7 @@ void SqlQueryWidget::start ()
 	connect (thread, SIGNAL (finished ()), this, SLOT (queryFinished ()));
 	connect (actionStop, SIGNAL (triggered ()), thread, SLOT (terminate ()));
 	thread->start ();
-}
-
-void SqlQueryWidget::stop ()
-{
-
+	m_time.start ();
 }
 
 void SqlQueryWidget::queryFinished ()
@@ -243,6 +239,12 @@ void SqlQueryWidget::queryFinished ()
 	if (!thread)
 		return;
 	QSqlQuery query = thread->lastQuery ();
-	outputModel->setQuery (query);
 	thread->deleteLater ();
+	outputModel->setQuery (query);
+	if (query.lastError ().isValid ()) {
+		messagesEdit->setPlainText (query.lastError ().text ());
+		outputTabs->setCurrentWidget (messagesEdit);
+	} else {
+		messagesEdit->setPlainText (tr ("The query is successfully comlete for %1 secs").arg (m_time.elapsed () / 100));
+	}
 }

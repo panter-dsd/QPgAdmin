@@ -34,6 +34,8 @@ class QSplitter;
 class QComboBox;
 class QSqlQueryModel;
 
+#include <QtCore/QTime>
+
 #include <QtGui/QWidget>
 
 class SqlQueryWidget : public QWidget {
@@ -41,6 +43,7 @@ class SqlQueryWidget : public QWidget {
 
 private:
 	QString m_connectionName;
+	QTime m_time;
 
 	QTabWidget *inputTabs;
 	QTabWidget *outputTabs;
@@ -76,7 +79,6 @@ private Q_SLOTS:
 	void open ();
 	void save ();
 	void start ();
-	void stop ();
 	void queryFinished ();
 };
 
