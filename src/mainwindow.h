@@ -42,6 +42,8 @@ private:
 	DatabaseTree *databaseTree;
 	QDockWidget *databaseTreeDock;
 
+	QAction *actionSqlEdit;
+
 public:
 	MainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
 	~MainWindow();
@@ -56,6 +58,7 @@ protected:
 
 private Q_SLOTS:
 	void openTable (const QString& connectionName, const QString& tableName);
+	void sqlEdit ();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

@@ -18,6 +18,8 @@
 DatabaseTree::DatabaseTree (QWidget *parent)
 	: QWidget (parent)
 {
+	setObjectName ("DATABASE_TREE");
+
 	tree = new QTreeWidget (this);
 	tree->header()->hide();
 	tree->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -26,6 +28,7 @@ DatabaseTree::DatabaseTree (QWidget *parent)
 	connect (tree, SIGNAL(itemActivated(QTreeWidgetItem*,int)), this, SLOT(itemActivated(QTreeWidgetItem*,int)));
 
 	QVBoxLayout *mainLayout = new QVBoxLayout ();
+	mainLayout->setContentsMargins (0, 0, 0, 0);
 	mainLayout->addWidget(tree);
 	setLayout(mainLayout);
 
@@ -84,6 +87,7 @@ void DatabaseTree::saveSettings()
 
 void DatabaseTree::retranslateStrings()
 {
+	setWindowTitle (tr ("Database tree"));
 	actionAddConnection->setText(tr ("Add connection"));
 }
 
@@ -133,6 +137,7 @@ void DatabaseTree::loadTree ()
 		if (!item) {
 			item = new QTreeWidgetItem ();
 			item->setText(0, connections.at(i).name);
+
 			item->setData(0, Qt::UserRole, "CONNECTION");
 			item->setData(1, Qt::UserRole, i);
 			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
@@ -142,6 +147,9 @@ void DatabaseTree::loadTree ()
 
 		if (QSqlDatabase::database(item->text(0)).isOpen()) {
 			loadDatabases (item);
+			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/connect_established.png"));
+		} else {
+			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/connect_no.png"));
 		}
 	}
 }

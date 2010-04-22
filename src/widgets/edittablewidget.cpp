@@ -73,6 +73,7 @@ bool EditTableWidget::event(QEvent *ev)
 
 void EditTableWidget::retranslateStrings()
 {
+	setWindowTitle (tr ("Edit table") + " " + model->tableName ());
 	actionSave->setText (tr ("Save"));
 	actionRevert->setText (tr ("Revert"));
 	actionAddIncludeFilter->setText (tr ("Add include filter"));

@@ -25,10 +25,12 @@ src/dialogs
 set (src_SRC
 src/main.cpp
 src/mainwindow.cpp
+src/querythread.cpp
 )
 
 set (src_HEADERS
 src/mainwindow.h
+src/querythread.h
 )
 
 ################################################################
@@ -38,11 +40,13 @@ src/mainwindow.h
 set (widgets_SRC
 src/widgets/databasetree.cpp
 src/widgets/edittablewidget.cpp
+src/widgets/sqlquerywidget.cpp
 )
 
 set (widgets_HEADERS
 src/widgets/databasetree.h
 src/widgets/edittablewidget.h
+src/widgets/sqlquerywidget.h
 )
 
 ################################################################

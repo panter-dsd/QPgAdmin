@@ -36,6 +36,7 @@
 #include "mainwindow.h"
 #include "databasetree.h"
 #include "edittablewidget.h"
+#include "sqlquerywidget.h"
 
 MainWindow::MainWindow(QWidget* parent, Qt::WFlags f)
 		: QMainWindow(parent, f)
@@ -52,6 +53,17 @@ MainWindow::MainWindow(QWidget* parent, Qt::WFlags f)
 	databaseTreeDock->setWidget(databaseTree);
 	addDockWidget(Qt::LeftDockWidgetArea, databaseTreeDock);
 
+	QMenuBar *mainMenu = new QMenuBar (this);
+	setMenuBar (mainMenu);
+
+	QMenu *instrumentsMenu = new QMenu (tr ("Instruments"), this);
+	mainMenu->addMenu (instrumentsMenu);
+
+
+	actionSqlEdit = new QAction (this);
+	connect (actionSqlEdit, SIGNAL (triggered ()), this, SLOT (sqlEdit ()));
+	instrumentsMenu->addAction (actionSqlEdit);
+
 	loadSettings();
 	retranslateStrings();
 }
@@ -63,7 +75,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::retranslateStrings()
 {
-
+	databaseTreeDock->setWindowTitle (databaseTree->windowTitle ());
 }
 
 void MainWindow::loadSettings()
@@ -111,6 +123,17 @@ bool MainWindow::event(QEvent *ev)
 void MainWindow::openTable (const QString& connectionName, const QString& tableName)
 {
 	EditTableWidget *w = new EditTableWidget (connectionName, tableName, this);
+
+	QMdiSubWindow *mdi = new QMdiSubWindow (this);
+	mdi->setWidget (w);
+	mdi->setAttribute(Qt::WA_DeleteOnClose);
+	mdiArea->addSubWindow(mdi);
+	mdi->show ();
+}
+
+void MainWindow::sqlEdit ()
+{
+	SqlQueryWidget *w = new SqlQueryWidget ("", this);
 
 	QMdiSubWindow *mdi = new QMdiSubWindow (this);
 	mdi->setWidget (w);
