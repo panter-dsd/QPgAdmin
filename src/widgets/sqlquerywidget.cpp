@@ -64,11 +64,13 @@ SqlQueryWidget::SqlQueryWidget (const QString& connectionName, QWidget *parent)
 
 	actionOpen = new QAction (this);
 	actionOpen->setIcon (QIcon (":/share/images/open.png"));
+	actionOpen->setShortcut (QKeySequence::Open);
 	connect (actionOpen, SIGNAL (triggered ()), this, SLOT (open ()));
 	toolBar->addAction (actionOpen);
 
 	actionSave = new QAction (this);
 	actionSave->setIcon (QIcon (":/share/images/save.png"));
+	actionSave->setShortcut (QKeySequence::Save);
 	connect (actionSave, SIGNAL (triggered ()), this, SLOT (save ()));
 	toolBar->addAction (actionSave);
 
@@ -76,6 +78,7 @@ SqlQueryWidget::SqlQueryWidget (const QString& connectionName, QWidget *parent)
 
 	actionStart = new QAction (this);
 	actionStart->setIcon (QIcon (":/share/images/start.png"));
+	actionStart->setShortcut (Qt::Key_F5);
 	connect (actionStart, SIGNAL (triggered ()), this, SLOT (start ()));
 	toolBar->addAction (actionStart);
 
@@ -241,10 +244,11 @@ void SqlQueryWidget::queryFinished ()
 	QSqlQuery query = thread->lastQuery ();
 	thread->deleteLater ();
 	outputModel->setQuery (query);
+	messagesEdit->setPlainText (query.lastQuery ());
 	if (query.lastError ().isValid ()) {
-		messagesEdit->setPlainText (query.lastError ().text ());
+		messagesEdit->appendPlainText (query.lastError ().text ());
 		outputTabs->setCurrentWidget (messagesEdit);
 	} else {
-		messagesEdit->setPlainText (tr ("The query is successfully comlete for %1 secs").arg (m_time.elapsed () / 100));
+		messagesEdit->appendPlainText (tr ("The query is successfully comlete for %1 secs").arg (m_time.elapsed () / 100));
 	}
 }

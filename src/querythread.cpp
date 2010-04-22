@@ -17,7 +17,7 @@ void QueryThread::run ()
 	QSqlQuery query (QSqlDatabase::database (m_connectionName));
 
 	foreach (const QString& queryString, queryStrings) {
-		const int result = query.exec (queryString);
+		const int result = query.exec (queryString.simplified ());
 		m_query = query; 
 		if (!result) {
 			break;
