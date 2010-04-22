@@ -181,8 +181,8 @@ void DatabaseTree::loadDatabases (QTreeWidgetItem *parent)
 
 			parent->addChild(item);
 		}
-		if (QSqlDatabase::database(parent->text(0) + item->text(0)).isOpen()) {
-			loadSchemes (parent->text(0) + item->text(0), item);
+		if (QSqlDatabase::database(parent->text(0) + "." + item->text(0)).isOpen()) {
+			loadSchemes (parent->text(0) + "."  + item->text(0), item);
 		}
 
 	}
@@ -413,8 +413,8 @@ void DatabaseTree::itemExpanded (QTreeWidgetItem *item)
 	}
 	if (item->data(0, Qt::UserRole).toString() == "DATABASE") {
 		const Connection& c = connections.at (item->parent()->data(1, Qt::UserRole).toInt());
-		if (!QSqlDatabase::database(c.name + item->text (0)).isOpen()) {
-			QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL", c.name + item->text (0));
+		if (!QSqlDatabase::database(c.name + "." + item->text (0)).isOpen()) {
+			QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL", c.name + "."  + item->text (0));
 
 			db.setHostName(c.host);
 			db.setPort(c.port);
@@ -424,7 +424,7 @@ void DatabaseTree::itemExpanded (QTreeWidgetItem *item)
 
 			if (!db.open()) {
 				QMessageBox::critical(this, "", db.lastError().text());
-				QSqlDatabase::removeDatabase(c.name + item->text (0));
+				QSqlDatabase::removeDatabase(c.name + "."  + item->text (0));
 			} else {
 				loadTree ();
 			}
