@@ -39,6 +39,7 @@ private:
 		QString name;
 		QString host;
 		int port;
+		QString maintenanceBase;
 		QString userName;
 		QString password;
 	};

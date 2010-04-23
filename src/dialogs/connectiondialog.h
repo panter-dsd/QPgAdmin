@@ -5,6 +5,7 @@ class QLabel;
 class QLineEdit;
 class QSpinBox;
 class QCheckBox;
+class QComboBox;
 
 #include <QtGui/QDialog>
 
@@ -20,6 +21,9 @@ private:
 
 	QLabel *portLabel;
 	QSpinBox *portEdit;
+
+	QLabel *maintenanceBaseLabel;
+	QComboBox *maintenanceBaseEdit;
 
 	QLabel *userNameLabel;
 	QLineEdit *userNameEdit;
@@ -42,6 +46,9 @@ public:
 
 	int port () const;
 	void setPort (int value);
+
+	QString maintenanceBase () const;
+	void setMaintenanceBase (const QString& value);
 
 	QString userName () const;
 	void setUserName (const QString& value);

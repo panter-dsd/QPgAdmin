@@ -59,6 +59,7 @@ void DatabaseTree::loadSettings()
 		c.name = settings.value("Name").toString();
 		c.host = settings.value("Host").toString();
 		c.port = settings.value("Port").toInt();
+		c.maintenanceBase = settings.value("MaintenanceBase").toString();
 		c.userName = settings.value("UserName").toString();
 		c.password = settings.value("Password").toString();
 
@@ -79,6 +80,7 @@ void DatabaseTree::saveSettings()
 		settings.setValue("Name", connections.at(i).name);
 		settings.setValue("Host", connections.at(i).host);
 		settings.setValue("Port", connections.at(i).port);
+		settings.setValue("MaintenanceBase", connections.at(i).maintenanceBase);
 		settings.setValue("UserName", connections.at(i).userName);
 		settings.setValue("Password", connections.at(i).password);
 	}
@@ -99,6 +101,7 @@ void DatabaseTree::addConnection ()
 		c.name = d.connectionName();
 		c.host = d.host();
 		c.port = d.port();
+		c.maintenanceBase = d.maintenanceBase ();
 		c.userName = d.userName();
 		c.password = d.password();
 		connections.append(c);
@@ -447,6 +450,7 @@ void DatabaseTree::itemExpanded (QTreeWidgetItem *item)
 
 			db.setHostName(c.host);
 			db.setPort(c.port);
+			db.setDatabaseName(c.maintenanceBase);
 			db.setUserName(c.userName);
 			db.setPassword(c.password);
 
@@ -490,6 +494,7 @@ void DatabaseTree::itemActivated (QTreeWidgetItem *item, int column)
 		d.setConnectionName(connections[i].name);
 		d.setHost(connections[i].host);
 		d.setPort(connections[i].port);
+		d.setMaintenanceBase (connections[i].maintenanceBase);
 		d.setUserName(connections[i].userName);
 		d.setPassword(connections[i].password);
 
@@ -497,6 +502,7 @@ void DatabaseTree::itemActivated (QTreeWidgetItem *item, int column)
 			connections[i].name = d.connectionName();
 			connections[i].host = d.host();
 			connections[i].port = d.port();
+			connections[i].maintenanceBase = d.maintenanceBase ();
 			connections[i].userName = d.userName();
 			connections[i].password = d.password();
 		}

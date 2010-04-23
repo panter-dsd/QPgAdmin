@@ -4,6 +4,7 @@
 #include <QtGui/QSpinBox>
 #include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
+#include <QtGui/QComboBox>
 
 #include "connectiondialog.h"
 
@@ -24,6 +25,16 @@ ConnectionDialog::ConnectionDialog(QWidget * parent,Qt::WindowFlags f)
 	portEdit->setRange(0, 9999);
 	portEdit->setValue(5432);
 
+	maintenanceBaseLabel = new QLabel (tr ("Maintenance base"));
+
+	maintenanceBaseEdit = new QComboBox (this);
+	maintenanceBaseEdit->setEditable (true);
+	maintenanceBaseEdit->addItem ("postgres");
+	maintenanceBaseEdit->addItem ("edb");
+	maintenanceBaseEdit->addItem ("template0");
+	maintenanceBaseEdit->addItem ("template1");
+	maintenanceBaseEdit->setCurrentIndex (0);
+
 	userNameLabel = new QLabel (tr ("User name"), this);
 
 	userNameEdit = new QLineEdit (this);
@@ -43,11 +54,13 @@ ConnectionDialog::ConnectionDialog(QWidget * parent,Qt::WindowFlags f)
 	gridLayout->addWidget(hostEdit, 1, 1);
 	gridLayout->addWidget(portLabel, 2, 0);
 	gridLayout->addWidget(portEdit, 2, 1);
-	gridLayout->addWidget(userNameLabel, 3, 0);
-	gridLayout->addWidget(userNameEdit, 3, 1);
-	gridLayout->addWidget(passwordLabel, 4, 0);
-	gridLayout->addWidget(passwordEdit, 4, 1);
-	gridLayout->addWidget(savePasswordBox, 5, 1);
+	gridLayout->addWidget(maintenanceBaseLabel, 3, 0);
+	gridLayout->addWidget(maintenanceBaseEdit, 3, 1);
+	gridLayout->addWidget(userNameLabel, 4, 0);
+	gridLayout->addWidget(userNameEdit, 4, 1);
+	gridLayout->addWidget(passwordLabel, 5, 0);
+	gridLayout->addWidget(passwordEdit, 5, 1);
+	gridLayout->addWidget(savePasswordBox, 6, 1);
 
 	QDialogButtonBox *buttons = new QDialogButtonBox (QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
 													  Qt::Horizontal,
@@ -89,6 +102,16 @@ int ConnectionDialog::port () const
 void ConnectionDialog::setPort (int value)
 {
 	portEdit->setValue(value);
+}
+
+QString ConnectionDialog::maintenanceBase () const
+{
+	return maintenanceBaseEdit->currentText ();
+}
+void ConnectionDialog::setMaintenanceBase (const QString& value)
+{
+	if (!value.isEmpty ())
+		maintenanceBaseEdit->setEditText (value);
 }
 
 QString ConnectionDialog::userName () const
