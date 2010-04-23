@@ -20,6 +20,7 @@
 
 #include "sqlquerywidget.h"
 #include "querythread.h"
+#include "sqlhighlighter.h"
 
 SqlQueryWidget::SqlQueryWidget (const QString& connectionName, QWidget *parent)
 	: QWidget (parent), m_connectionName (connectionName)
@@ -148,6 +149,9 @@ QPlainTextEdit* SqlQueryWidget::addSqlEditor ()
 	connect (e, SIGNAL (modificationChanged (bool)), e, SLOT (setWindowModified (bool)));
 	connect (e, SIGNAL (modificationChanged (bool)), this, SLOT (updateTabCaptions ()));
 	sqlEdits << e;
+
+	SQLHighlighter *sqlhighlighter = new SQLHighlighter(e->document()); 
+
 	const int index = inputTabs->addTab (e, tr ("Unnamed"));
 	inputTabs->setCurrentIndex (index);
 	return e;

@@ -26,11 +26,13 @@ set (src_SRC
 src/main.cpp
 src/mainwindow.cpp
 src/querythread.cpp
+src/sqlhighlighter.cpp
 )
 
 set (src_HEADERS
 src/mainwindow.h
 src/querythread.h
+src/sqlhighlighter.h
 )
 
 ################################################################
