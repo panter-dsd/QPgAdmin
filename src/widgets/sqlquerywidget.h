@@ -33,6 +33,7 @@ class QAction;
 class QSplitter;
 class QComboBox;
 class QSqlQueryModel;
+class QStatusBar;
 
 #include <QtCore/QTime>
 
@@ -44,6 +45,7 @@ class SqlQueryWidget : public QWidget {
 private:
 	QString m_connectionName;
 	QTime m_time;
+	int m_timer;
 
 	QTabWidget *inputTabs;
 	QTabWidget *outputTabs;
@@ -54,6 +56,7 @@ private:
 	QToolBar *toolBar;
 	QSplitter *splitter;
 	QComboBox *connectionEdit;
+	QStatusBar *statusBar;
 
 	QAction *actionAddSqlEditor;
 	QAction *actionOpen;

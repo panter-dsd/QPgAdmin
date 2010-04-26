@@ -13,6 +13,7 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QComboBox>
+#include <QtGui/QStatusBar>
 
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQueryModel>
@@ -45,6 +46,8 @@ SqlQueryWidget::SqlQueryWidget (const QString& connectionName, QWidget *parent)
 
 	toolBar = new QToolBar (this);
 
+	statusBar = new QStatusBar (this);
+
 	splitter = new QSplitter (Qt::Vertical, this);
 	splitter->setObjectName ("SPLITTER");
 	splitter->addWidget (inputTabs);
@@ -54,6 +57,7 @@ SqlQueryWidget::SqlQueryWidget (const QString& connectionName, QWidget *parent)
 	mainLayout->setContentsMargins (0, 0, 0, 0);
 	mainLayout->addWidget (toolBar);
 	mainLayout->addWidget (splitter);
+	mainLayout->addWidget (statusBar);
 	setLayout (mainLayout);
 
 	connectionEdit = new QComboBox (this);
@@ -171,6 +175,9 @@ bool SqlQueryWidget::event(QEvent *ev)
 				return false;
 			}
 		}
+	}
+	if (ev->type () == QEvent::Timer) {
+		statusBar->showMessage (tr ("%1 secs").arg (m_time.elapsed () / 100));
 	}
 
 	return QWidget::event(ev);
@@ -324,11 +331,13 @@ void SqlQueryWidget::start ()
 	connect (thread, SIGNAL (finished ()), this, SLOT (queryFinished ()));
 	connect (actionStop, SIGNAL (triggered ()), thread, SLOT (terminate ()));
 	thread->start ();
+	m_timer = startTimer (100);
 	m_time.start ();
 }
 
 void SqlQueryWidget::queryFinished ()
 {
+	killTimer (m_timer);
 	actionStart->setEnabled (true);
 	actionStop->setEnabled (false);
 
