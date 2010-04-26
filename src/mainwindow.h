@@ -43,6 +43,7 @@ private:
 	QDockWidget *databaseTreeDock;
 
 	QAction *actionSqlEdit;
+	QAction *actionShowHideDatabaseTree;
 
 public:
 	MainWindow(QWidget* parent = 0, Qt::WFlags f = 0);

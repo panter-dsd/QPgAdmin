@@ -59,10 +59,19 @@ MainWindow::MainWindow(QWidget* parent, Qt::WFlags f)
 	QMenu *instrumentsMenu = new QMenu (tr ("Instruments"), this);
 	mainMenu->addMenu (instrumentsMenu);
 
+	QMenu *viewMenu = new QMenu (tr ("View"), this);
+	mainMenu->addMenu (viewMenu);
 
 	actionSqlEdit = new QAction (this);
 	connect (actionSqlEdit, SIGNAL (triggered ()), this, SLOT (sqlEdit ()));
 	instrumentsMenu->addAction (actionSqlEdit);
+
+	actionShowHideDatabaseTree = new QAction (this);
+	actionShowHideDatabaseTree->setShortcut (Qt::CTRL + Qt::Key_E);
+	actionShowHideDatabaseTree->setCheckable (true);
+	actionShowHideDatabaseTree->setChecked (true);
+	connect (actionShowHideDatabaseTree, SIGNAL (toggled (bool)), databaseTreeDock, SLOT (setShown (bool)));
+	viewMenu->addAction (actionShowHideDatabaseTree);
 
 	loadSettings();
 	retranslateStrings();
@@ -76,6 +85,8 @@ MainWindow::~MainWindow()
 void MainWindow::retranslateStrings()
 {
 	databaseTreeDock->setWindowTitle (databaseTree->windowTitle ());
+
+	actionShowHideDatabaseTree->setText (tr ("Show database tree"));
 }
 
 void MainWindow::loadSettings()
