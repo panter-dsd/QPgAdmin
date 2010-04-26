@@ -35,6 +35,10 @@ DatabaseTree::DatabaseTree (QWidget *parent)
 	actionAddConnection = new QAction (this);
 	connect (actionAddConnection, SIGNAL(triggered()), this, SLOT(addConnection()));
 
+	actionEditConnection = new QAction (this);
+	connect (actionEditConnection, SIGNAL(triggered()), this, SLOT(editConnection()));
+
+
 	retranslateStrings ();
 	loadSettings();
 	loadTree ();
@@ -43,6 +47,10 @@ DatabaseTree::DatabaseTree (QWidget *parent)
 DatabaseTree::~DatabaseTree()
 {
 	saveSettings();
+	foreach (const QString& connectionName, QSqlDatabase::connectionNames ()) {
+		QSqlDatabase::database (connectionName).close ();
+		QSqlDatabase::removeDatabase (connectionName);
+	}
 }
 
 void DatabaseTree::loadSettings()
@@ -91,6 +99,7 @@ void DatabaseTree::retranslateStrings()
 {
 	setWindowTitle (tr ("Database tree"));
 	actionAddConnection->setText(tr ("Add connection"));
+	actionEditConnection->setText(tr ("Edit connection"));
 }
 
 void DatabaseTree::addConnection ()
@@ -110,13 +119,49 @@ void DatabaseTree::addConnection ()
 	}
 }
 
+void DatabaseTree::editConnection ()
+{
+	QAction *action = qobject_cast <QAction*> (sender ());
+	if (!action)
+		return;
+
+	const int index = action->data ().toInt ();
+
+	ConnectionDialog d (this);
+	d.setConnectionName (connections.at (index).name);
+	d.setHost (connections.at (index).host);
+	d.setPort (connections.at (index).port);
+	d.setMaintenanceBase (connections.at (index).maintenanceBase);
+	d.setUserName (connections.at (index).userName);
+	d.setPassword (connections.at (index).password);
+	
+	if (d.exec()) {
+		connections [index].name = d.connectionName();
+		connections [index].host = d.host();
+		connections [index].port = d.port();
+		connections [index].maintenanceBase = d.maintenanceBase ();
+		connections [index].userName = d.userName();
+		connections [index].password = d.password();
+
+		loadTree();
+	}
+}
+
 void DatabaseTree::treeContextMenu (const QPoint& point)
 {
 	QMenu menu;
 
-	menu.addAction(actionAddConnection);
-
 	QTreeWidgetItem *item = tree->itemAt(point);
+	if (!item) {
+		menu.addAction(actionAddConnection);
+	} else {
+		const QMap <QString, QVariant> &option = item->data (0, Qt::UserRole).value<QMap <QString, QVariant> > ();
+		if (option ["Type"].toString () == "Connection") {
+			actionEditConnection->setData (option ["Index"]);
+			menu.addAction (actionEditConnection);
+		}
+	}
+
 
 	menu.exec(tree->mapToGlobal(point));
 }

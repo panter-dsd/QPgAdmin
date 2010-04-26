@@ -48,6 +48,7 @@ private:
 	QTreeWidget *tree;
 
 	QAction *actionAddConnection;
+	QAction *actionEditConnection;
 
 	QList<Connection> connections;
 public:
@@ -67,6 +68,7 @@ private:
 
 private Q_SLOTS:
 	void addConnection ();
+	void editConnection ();
 	void treeContextMenu (const QPoint& point);
 
 	void itemExpanded (QTreeWidgetItem *item);
