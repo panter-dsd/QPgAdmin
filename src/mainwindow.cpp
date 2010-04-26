@@ -56,10 +56,10 @@ MainWindow::MainWindow(QWidget* parent, Qt::WFlags f)
 	QMenuBar *mainMenu = new QMenuBar (this);
 	setMenuBar (mainMenu);
 
-	QMenu *instrumentsMenu = new QMenu (tr ("Instruments"), this);
+	instrumentsMenu = new QMenu (this);
 	mainMenu->addMenu (instrumentsMenu);
 
-	QMenu *viewMenu = new QMenu (tr ("View"), this);
+	viewMenu = new QMenu (this);
 	mainMenu->addMenu (viewMenu);
 
 	actionSqlEdit = new QAction (this);
@@ -86,6 +86,10 @@ void MainWindow::retranslateStrings()
 {
 	databaseTreeDock->setWindowTitle (databaseTree->windowTitle ());
 
+	instrumentsMenu->setTitle (tr ("Instruments"));
+	viewMenu->setTitle (tr ("View"));
+
+	actionSqlEdit->setText ("SQL editor");
 	actionShowHideDatabaseTree->setText (tr ("Show database tree"));
 }
 

@@ -29,6 +29,7 @@ class QAction;
 class DatabaseTree;
 class QDockWidget;
 class QMdiArea;
+class QMenu;
 
 #include <QtGui/QMainWindow>
 
@@ -41,6 +42,9 @@ private:
 
 	DatabaseTree *databaseTree;
 	QDockWidget *databaseTreeDock;
+
+	QMenu *instrumentsMenu;
+	QMenu *viewMenu;
 
 	QAction *actionSqlEdit;
 	QAction *actionShowHideDatabaseTree;
