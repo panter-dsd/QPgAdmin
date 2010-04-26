@@ -150,6 +150,14 @@ bool SqlQueryWidget::event(QEvent *ev)
 	if (ev->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	}
+	if (ev->type () == QEvent::Close) {
+		while (inputTabs->count () > 0) {
+			if (!closeTab (0)) {
+				ev->ignore ();
+				return false;
+			}
+		}
+	}
 
 	return QWidget::event(ev);
 }
@@ -157,7 +165,6 @@ bool SqlQueryWidget::event(QEvent *ev)
 QPlainTextEdit* SqlQueryWidget::addSqlEditor ()
 {
 	QPlainTextEdit *e = new QPlainTextEdit (this);
-	connect (e, SIGNAL (modificationChanged (bool)), e, SLOT (setWindowModified (bool)));
 	connect (e, SIGNAL (modificationChanged (bool)), this, SLOT (updateTabCaptions ()));
 	sqlEdits << e;
 
@@ -257,13 +264,13 @@ void SqlQueryWidget::updateTabCaptions ()
 	
 		if (e->objectName ().isEmpty ()) {
 			QString text = tr ("Unnamed");
-			if (e->isWindowModified ())
+			if (e->document ()->isModified ())
 				text += " *";
 			inputTabs->setTabText (i, text);
 		} else {
 			QFileInfo fi (e->objectName ());
 			QString text = fi.fileName ();
-			if (e->isWindowModified ())
+			if (e->document ()->isModified ())
 				text += " *";
 			inputTabs->setTabText (i, text);  
 			inputTabs->setTabToolTip (i, QDir::toNativeSeparators (fi.absoluteFilePath ()));  
@@ -326,7 +333,7 @@ void SqlQueryWidget::updateActions ()
 	if (!e)
 		return;
 
-	actionSave->setEnabled (e->isWindowModified () || e->objectName ().isEmpty ());
+	actionSave->setEnabled (e->document ()->isModified () || e->objectName ().isEmpty ());
 }
 
 bool SqlQueryWidget::closeTab (int index)
@@ -337,7 +344,7 @@ bool SqlQueryWidget::closeTab (int index)
 	if (!e)
 		return false;
 
-	if (e->isWindowModified ()) {
+	if (e->document ()->isModified ()) {
 		int res = QMessageBox::question (this, "", tr ("Tab \"%1\" is modified.\nSave?").arg (inputTabs->tabText (index)), 
 										 QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 		
@@ -352,6 +359,5 @@ bool SqlQueryWidget::closeTab (int index)
 	}
 
 	delete e;
-	inputTabs->removeTab (index);
 	return true;
 }
