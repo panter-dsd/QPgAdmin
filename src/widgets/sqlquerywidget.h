@@ -78,14 +78,15 @@ private Q_SLOTS:
 	void updateTabCaptions ();
 	QPlainTextEdit* addSqlEditor ();
 	void open ();
-	void save ();
-	void saveAs ();
+	bool save ();
+	bool saveAs ();
 	void start ();
 	void queryFinished ();
 
 public Q_SLOTS:
 	void connectionsChanged ();
 	void updateActions ();
+	bool closeTab (int index);
 };
 
 #endif //SQLQUERYWIDGET_H

@@ -27,7 +27,9 @@ SqlQueryWidget::SqlQueryWidget (const QString& connectionName, QWidget *parent)
 {
 	inputTabs = new QTabWidget (this);
 	inputTabs->setContextMenuPolicy (Qt::ActionsContextMenu);
+	inputTabs->setTabsClosable (true);
 	connect (inputTabs, SIGNAL (currentChanged (int)), this, SLOT (updateActions ()));
+	connect (inputTabs, SIGNAL (tabCloseRequested (int)), this, SLOT (closeTab (int)));
 
 	outputTabs = new QTabWidget (this);
 
@@ -198,22 +200,21 @@ void SqlQueryWidget::open ()
 	updateTabCaptions ();
 }
 
-void SqlQueryWidget::save ()
+bool SqlQueryWidget::save ()
 {
 	QPlainTextEdit *e = qobject_cast<QPlainTextEdit*> (inputTabs->currentWidget ());
 	if (!e)
-		return;
+		return false;
 
 	const QString& fileName = e->objectName ();
 	if (fileName.isEmpty ()) {
-		saveAs ();
-		return;
+		return saveAs ();
 	}	
 
 	QFile file (fileName);
 	if (!file.open (QIODevice::WriteOnly)) {
 		QMessageBox::critical (this, "", tr ("Error save file"));
-		return;
+		return false;
 	}
 	QTextStream stream (&file);
 
@@ -221,13 +222,14 @@ void SqlQueryWidget::save ()
 	file.close ();
 	e->document ()->setModified (false);
 	updateTabCaptions ();
+	return true;
 }
 
-void SqlQueryWidget::saveAs ()
+bool SqlQueryWidget::saveAs ()
 {
 	QPlainTextEdit *e = qobject_cast<QPlainTextEdit*> (inputTabs->currentWidget ());
 	if (!e)
-		return;
+		return false;
 
 	QSettings settings;
 	const QString& fileName = QFileDialog::getSaveFileName (this,
@@ -235,7 +237,7 @@ void SqlQueryWidget::saveAs ()
 															settings.value ("SqlQueryWidget/SavePath", "").toString (),
 															tr("Sql files (*.sql)\nAll files (*.*)"));
 	if (fileName.isEmpty ()) {
-		return;
+		return false;
 	}
 
 	settings.setValue ("SqlQueryWidget/SavePath", QFileInfo (fileName).absolutePath ());
@@ -243,7 +245,7 @@ void SqlQueryWidget::saveAs ()
 
 	e->setObjectName (QFileInfo (fileName).absoluteFilePath ());
 	updateTabCaptions ();
-	save ();
+	return save ();
 }
 
 void SqlQueryWidget::updateTabCaptions ()
@@ -325,4 +327,31 @@ void SqlQueryWidget::updateActions ()
 		return;
 
 	actionSave->setEnabled (e->isWindowModified () || e->objectName ().isEmpty ());
+}
+
+bool SqlQueryWidget::closeTab (int index)
+{
+	inputTabs->setCurrentIndex (index);
+
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit*> (inputTabs->widget (index));
+	if (!e)
+		return false;
+
+	if (e->isWindowModified ()) {
+		int res = QMessageBox::question (this, "", tr ("Tab \"%1\" is modified.\nSave?").arg (inputTabs->tabText (index)), 
+										 QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+		
+		if (res == QMessageBox::Cancel) {
+			return false;
+		}
+	
+		if (res == QMessageBox::Yes) { 
+			if (!save ())
+				return false;
+		}
+	}
+
+	delete e;
+	inputTabs->removeTab (index);
+	return true;
 }
