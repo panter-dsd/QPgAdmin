@@ -20,6 +20,7 @@
         <file>share/images/save.png</file>
         <file>share/images/save_as.png</file>
         <file>share/images/undo.png</file>
+        <file>share/images/redo.png</file>
         <file>share/images/connect_no.png</file>
         <file>share/images/connect_established.png</file>
         <file>share/images/start.png</file>

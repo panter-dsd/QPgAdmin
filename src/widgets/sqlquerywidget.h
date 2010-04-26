@@ -61,6 +61,8 @@ private:
 	QAction *actionSaveAs;
 	QAction *actionStart;
 	QAction *actionStop;
+	QAction *actionUndo;
+	QAction *actionRedo;
 
 public:
 	SqlQueryWidget (const QString& connectionName = "", QWidget *parent = 0);
@@ -82,6 +84,8 @@ private Q_SLOTS:
 	bool saveAs ();
 	void start ();
 	void queryFinished ();
+	void undo ();
+	void redo ();
 
 public Q_SLOTS:
 	void connectionsChanged ();

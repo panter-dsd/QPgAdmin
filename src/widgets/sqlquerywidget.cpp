@@ -86,6 +86,18 @@ SqlQueryWidget::SqlQueryWidget (const QString& connectionName, QWidget *parent)
 
 	toolBar->addSeparator ();
 
+	actionUndo = new QAction (this);
+	actionUndo->setIcon (QIcon (":/share/images/undo.png"));
+	connect (actionUndo, SIGNAL (triggered ()), this, SLOT (undo ()));
+	toolBar->addAction (actionUndo);
+
+	actionRedo = new QAction (this);
+	actionRedo->setIcon (QIcon (":/share/images/redo.png"));
+	connect (actionRedo, SIGNAL (triggered ()), this, SLOT (redo ()));
+	toolBar->addAction (actionRedo);
+
+	toolBar->addSeparator ();
+
 	actionStart = new QAction (this);
 	actionStart->setIcon (QIcon (":/share/images/start.png"));
 	actionStart->setShortcut (Qt::Key_F5);
@@ -121,6 +133,8 @@ void SqlQueryWidget::retranslateStrings()
 	actionOpen->setText (tr ("Open"));
 	actionSave->setText (tr ("Save"));
 	actionSaveAs->setText (tr ("Save as..."));
+	actionUndo->setText (tr ("Undo"));
+	actionRedo->setText (tr ("Redo"));
 	actionStart->setText (tr ("Start"));
 	actionStop->setText (tr ("Stop"));
 }
@@ -360,4 +374,22 @@ bool SqlQueryWidget::closeTab (int index)
 
 	delete e;
 	return true;
+}
+
+void SqlQueryWidget::undo ()
+{
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit*> (inputTabs->currentWidget ());
+	if (!e)
+		return;
+
+	e->undo ();
+}
+
+void SqlQueryWidget::redo ()
+{
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit*> (inputTabs->currentWidget ());
+	if (!e)
+		return;
+
+	e->redo ();
 }
