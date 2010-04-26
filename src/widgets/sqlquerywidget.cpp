@@ -27,6 +27,7 @@ SqlQueryWidget::SqlQueryWidget (const QString& connectionName, QWidget *parent)
 {
 	inputTabs = new QTabWidget (this);
 	inputTabs->setContextMenuPolicy (Qt::ActionsContextMenu);
+	connect (inputTabs, SIGNAL (currentChanged (int)), this, SLOT (updateActions ()));
 
 	outputTabs = new QTabWidget (this);
 
@@ -75,6 +76,12 @@ SqlQueryWidget::SqlQueryWidget (const QString& connectionName, QWidget *parent)
 	connect (actionSave, SIGNAL (triggered ()), this, SLOT (save ()));
 	toolBar->addAction (actionSave);
 
+	actionSaveAs = new QAction (this);
+	actionSaveAs->setIcon (QIcon (":/share/images/save_as.png"));
+	actionSaveAs->setShortcut (Qt::CTRL + Qt::SHIFT + Qt::Key_S);
+	connect (actionSaveAs, SIGNAL (triggered ()), this, SLOT (saveAs ()));
+	toolBar->addAction (actionSaveAs);
+
 	toolBar->addSeparator ();
 
 	actionStart = new QAction (this);
@@ -111,6 +118,7 @@ void SqlQueryWidget::retranslateStrings()
 	actionAddSqlEditor->setText (tr ("Add SQL editor"));
 	actionOpen->setText (tr ("Open"));
 	actionSave->setText (tr ("Save"));
+	actionSaveAs->setText (tr ("Save as..."));
 	actionStart->setText (tr ("Start"));
 	actionStop->setText (tr ("Stop"));
 }
@@ -183,7 +191,7 @@ void SqlQueryWidget::open ()
 		
 		QPlainTextEdit *e = addSqlEditor ();
 		e->setPlainText (stream.readAll ());
-		e->setWindowModified (false);
+		e->document ()->setModified (false);
 		e->setObjectName (QFileInfo (fileName).absoluteFilePath ());
 		file.close ();
 	}
@@ -192,7 +200,50 @@ void SqlQueryWidget::open ()
 
 void SqlQueryWidget::save ()
 {
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit*> (inputTabs->currentWidget ());
+	if (!e)
+		return;
 
+	const QString& fileName = e->objectName ();
+	if (fileName.isEmpty ()) {
+		saveAs ();
+		return;
+	}	
+
+	QFile file (fileName);
+	if (!file.open (QIODevice::WriteOnly)) {
+		QMessageBox::critical (this, "", tr ("Error save file"));
+		return;
+	}
+	QTextStream stream (&file);
+
+	stream << e->toPlainText ();
+	file.close ();
+	e->document ()->setModified (false);
+	updateTabCaptions ();
+}
+
+void SqlQueryWidget::saveAs ()
+{
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit*> (inputTabs->currentWidget ());
+	if (!e)
+		return;
+
+	QSettings settings;
+	const QString& fileName = QFileDialog::getSaveFileName (this,
+															tr ("Save"),
+															settings.value ("SqlQueryWidget/SavePath", "").toString (),
+															tr("Sql files (*.sql)\nAll files (*.*)"));
+	if (fileName.isEmpty ()) {
+		return;
+	}
+
+	settings.setValue ("SqlQueryWidget/SavePath", QFileInfo (fileName).absolutePath ());
+	settings.sync ();
+
+	e->setObjectName (QFileInfo (fileName).absoluteFilePath ());
+	updateTabCaptions ();
+	save ();
 }
 
 void SqlQueryWidget::updateTabCaptions ()
@@ -216,6 +267,7 @@ void SqlQueryWidget::updateTabCaptions ()
 			inputTabs->setTabToolTip (i, QDir::toNativeSeparators (fi.absoluteFilePath ()));  
 		}
 	}
+	updateActions ();
 }
 
 void SqlQueryWidget::start ()
@@ -264,4 +316,13 @@ void SqlQueryWidget::connectionsChanged ()
 	connectionEdit->clear ();
 	connectionEdit->addItems (QSqlDatabase::connectionNames ());
 	connectionEdit->setCurrentIndex (connectionEdit->findText (currentConnection, Qt::MatchFixedString));
+}
+
+void SqlQueryWidget::updateActions ()
+{
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit*> (inputTabs->currentWidget ());
+	if (!e)
+		return;
+
+	actionSave->setEnabled (e->isWindowModified () || e->objectName ().isEmpty ());
 }

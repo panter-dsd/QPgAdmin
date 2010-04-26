@@ -58,6 +58,7 @@ private:
 	QAction *actionAddSqlEditor;
 	QAction *actionOpen;
 	QAction *actionSave;
+	QAction *actionSaveAs;
 	QAction *actionStart;
 	QAction *actionStop;
 
@@ -78,11 +79,13 @@ private Q_SLOTS:
 	QPlainTextEdit* addSqlEditor ();
 	void open ();
 	void save ();
+	void saveAs ();
 	void start ();
 	void queryFinished ();
 
 public Q_SLOTS:
 	void connectionsChanged ();
+	void updateActions ();
 };
 
 #endif //SQLQUERYWIDGET_H

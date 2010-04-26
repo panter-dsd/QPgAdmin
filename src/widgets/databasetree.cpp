@@ -161,11 +161,11 @@ void DatabaseTree::closeConnection ()
 	foreach (const QString& name, QSqlDatabase::connectionNames ()) {
 		if (name.startsWith (connectionName)) {
 			QSqlDatabase::database (name, false).close ();
-			QSqlDatabase::removeDatabase (name);
 			if (QSqlDatabase::database (name, false).isOpen ()) {
 				QMessageBox::critical (this, "", QSqlDatabase::database (name, false).lastError ().text ());
 				return;
 			}
+			QSqlDatabase::removeDatabase (name);
 		}
 	}
 
@@ -295,6 +295,7 @@ void DatabaseTree::loadDatabases (QTreeWidgetItem *parent)
 			loadSchemes (item);
 		} else {
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/disconnected-database.png"));
+			item->setExpanded (false);
 			qDeleteAll (item->takeChildren ());
 			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 		}
