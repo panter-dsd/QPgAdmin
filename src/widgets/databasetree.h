@@ -49,6 +49,7 @@ private:
 
 	QAction *actionAddConnection;
 	QAction *actionEditConnection;
+	QAction *actionCloseConnection;
 
 	QList<Connection> connections;
 public:
@@ -69,6 +70,7 @@ private:
 private Q_SLOTS:
 	void addConnection ();
 	void editConnection ();
+	void closeConnection ();
 	void treeContextMenu (const QPoint& point);
 
 	void itemExpanded (QTreeWidgetItem *item);

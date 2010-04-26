@@ -38,6 +38,8 @@ DatabaseTree::DatabaseTree (QWidget *parent)
 	actionEditConnection = new QAction (this);
 	connect (actionEditConnection, SIGNAL(triggered()), this, SLOT(editConnection()));
 
+	actionCloseConnection = new QAction (this);
+	connect (actionCloseConnection, SIGNAL(triggered()), this, SLOT(closeConnection()));
 
 	retranslateStrings ();
 	loadSettings();
@@ -100,6 +102,7 @@ void DatabaseTree::retranslateStrings()
 	setWindowTitle (tr ("Database tree"));
 	actionAddConnection->setText(tr ("Add connection"));
 	actionEditConnection->setText(tr ("Edit connection"));
+	actionCloseConnection->setText(tr ("Close connection"));
 }
 
 void DatabaseTree::addConnection ()
@@ -147,6 +150,29 @@ void DatabaseTree::editConnection ()
 	}
 }
 
+void DatabaseTree::closeConnection ()
+{
+	QAction *action = qobject_cast <QAction*> (sender ());
+	if (!action)
+		return;
+
+	const QString& connectionName = action->data ().toString ();
+
+	foreach (const QString& name, QSqlDatabase::connectionNames ()) {
+		if (name.startsWith (connectionName)) {
+			QSqlDatabase::database (name, false).close ();
+			QSqlDatabase::removeDatabase (name);
+			if (QSqlDatabase::database (name, false).isOpen ()) {
+				QMessageBox::critical (this, "", QSqlDatabase::database (name, false).lastError ().text ());
+				return;
+			}
+		}
+	}
+
+	emit connectionsChanged ();
+	loadTree();
+}
+
 void DatabaseTree::treeContextMenu (const QPoint& point)
 {
 	QMenu menu;
@@ -159,11 +185,23 @@ void DatabaseTree::treeContextMenu (const QPoint& point)
 		if (option ["Type"].toString () == "Connection") {
 			actionEditConnection->setData (option ["Index"]);
 			menu.addAction (actionEditConnection);
+			if (QSqlDatabase::contains (item->text (0))) {
+				actionCloseConnection->setData (item->text (0));
+				menu.addAction (actionCloseConnection);
+			}
+		}
+		if (option ["Type"].toString () == "Database") {
+			const QString& connectionName = option ["ConnectionName"].toString () + "." + item->text (0);
+			if (QSqlDatabase::contains (connectionName)) {
+				actionCloseConnection->setData (connectionName);
+				menu.addAction (actionCloseConnection);
+			}
 		}
 	}
 
-
-	menu.exec(tree->mapToGlobal(point));
+	if (!menu.actions ().isEmpty ()) {
+		menu.exec(tree->mapToGlobal(point));
+	}
 }
 
 void DatabaseTree::loadTree ()
@@ -189,16 +227,18 @@ void DatabaseTree::loadTree ()
 			item->setText(0, connections.at(i).name);
 			options ["Index"] = i;
 			item->setData (0, Qt::UserRole, options);
-			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 
 			tree->addTopLevelItem(item);
 		}
 
-		if (QSqlDatabase::database(item->text(0)).isOpen()) {
+		if (QSqlDatabase::database(item->text(0), false).isOpen()) {
 			loadDatabases (item);
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/connect_established.png"));
 		} else {
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/connect_no.png"));
+			item->setExpanded (false);
+			qDeleteAll (item->takeChildren ());
+			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 		}
 	}
 }
@@ -248,15 +288,15 @@ void DatabaseTree::loadDatabases (QTreeWidgetItem *parent)
 			item->setText(0, query.value(0).toString());
 			item->setData (0, Qt::UserRole, options);
 
-			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-
 			parent->addChild(item);
 		}
-		if (QSqlDatabase::database(parent->parent ()->text(0) + "." + item->text(0)).isOpen()) {
+		if (QSqlDatabase::database(options ["ConnectionName"].toString () + "." + item->text(0), false).isOpen()) {
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/database.png"));
 			loadSchemes (item);
 		} else {
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/disconnected-database.png"));
+			qDeleteAll (item->takeChildren ());
+			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 		}
 	}
 }
@@ -531,26 +571,6 @@ void DatabaseTree::itemActivated (QTreeWidgetItem *item, int column)
 {
 	QMap<QString, QVariant> options = item->data (0, Qt::UserRole).value<QMap<QString, QVariant> > ();
 
-	if (options ["Type"].toString () == "Connection") {
-		const int i = options ["Index"].toInt ();
-		ConnectionDialog d (this);
-
-		d.setConnectionName(connections[i].name);
-		d.setHost(connections[i].host);
-		d.setPort(connections[i].port);
-		d.setMaintenanceBase (connections[i].maintenanceBase);
-		d.setUserName(connections[i].userName);
-		d.setPassword(connections[i].password);
-
-		if (d.exec()) {
-			connections[i].name = d.connectionName();
-			connections[i].host = d.host();
-			connections[i].port = d.port();
-			connections[i].maintenanceBase = d.maintenanceBase ();
-			connections[i].userName = d.userName();
-			connections[i].password = d.password();
-		}
-	}
 	if (options ["Type"].toString () == "Table") {
 		QTreeWidgetItem *parent = item;
 		
