@@ -128,6 +128,16 @@ bool MainWindow::event(QEvent *ev)
 		retranslateStrings();
 	}
 
+	if (ev->type () == QEvent::Close) {
+		QList <QMdiSubWindow*> l = findChildren <QMdiSubWindow*> ();
+		foreach (QMdiSubWindow *w, l) {
+			if (!w->close ()) {
+				ev->ignore ();
+				return false;
+			}
+		}
+	}
+
 	return QMainWindow::event(ev);
 }
 
