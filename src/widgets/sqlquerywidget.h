@@ -80,6 +80,9 @@ private Q_SLOTS:
 	void save ();
 	void start ();
 	void queryFinished ();
+
+public Q_SLOTS:
+	void connectionsChanged ();
 };
 
 #endif //SQLQUERYWIDGET_H

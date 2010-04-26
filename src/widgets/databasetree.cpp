@@ -320,7 +320,6 @@ void DatabaseTree::loadTables (QTreeWidgetItem *parent)
 			item = new QTreeWidgetItem ();
 			item->setText(0, query.value(0).toString());
 			item->setData(0, Qt::UserRole, options);
-			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 			item->setData (0, Qt::DecorationRole, QIcon (":/share/images/table.png"));
 
 			parent->addChild(item);
@@ -375,7 +374,6 @@ void DatabaseTree::loadViews (QTreeWidgetItem *parent)
 			item = new QTreeWidgetItem ();
 			item->setText(0, query.value(0).toString());
 			item->setData(0, Qt::UserRole, options);
-			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 			item->setData (0, Qt::DecorationRole, QIcon (":/share/images/view.png"));
 
 			parent->addChild(item);
@@ -430,7 +428,6 @@ void DatabaseTree::loadSequences (QTreeWidgetItem *parent)
 			item = new QTreeWidgetItem ();
 			item->setText(0, query.value(0).toString());
 			item->setData(0, Qt::UserRole, options);
-			item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 			item->setData (0, Qt::DecorationRole, QIcon (":/share/images/sequence.png"));
 
 			parent->addChild(item);
@@ -459,6 +456,7 @@ void DatabaseTree::itemExpanded (QTreeWidgetItem *item)
 				QSqlDatabase::removeDatabase(c.name);
 			} else {
 				loadTree ();
+				emit connectionsChanged ();
 			}
 		}
 	}
@@ -478,6 +476,7 @@ void DatabaseTree::itemExpanded (QTreeWidgetItem *item)
 				QSqlDatabase::removeDatabase(c.name + "."  + item->text (0));
 			} else {
 				loadTree ();
+				emit connectionsChanged ();
 			}
 		}
 	}

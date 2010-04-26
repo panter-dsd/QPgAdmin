@@ -103,6 +103,7 @@ SqlQueryWidget::~SqlQueryWidget()
 
 void SqlQueryWidget::retranslateStrings()
 {
+	setWindowTitle (tr ("SQL editor"));
 	updateTabCaptions ();
 	outputTabs->setTabText (outputTabs->indexOf (outputTable), tr ("Output table"));
 	outputTabs->setTabText (outputTabs->indexOf (messagesEdit), tr ("Messages"));
@@ -255,4 +256,12 @@ void SqlQueryWidget::queryFinished ()
 	} else {
 		messagesEdit->appendPlainText (tr ("The query is successfully comlete for %1 secs").arg (m_time.elapsed () / 100));
 	}
+}
+
+void SqlQueryWidget::connectionsChanged ()
+{
+	const QString& currentConnection = connectionEdit->currentText ();
+	connectionEdit->clear ();
+	connectionEdit->addItems (QSqlDatabase::connectionNames ());
+	connectionEdit->setCurrentIndex (connectionEdit->findText (currentConnection, Qt::MatchFixedString));
 }

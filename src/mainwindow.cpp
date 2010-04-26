@@ -122,9 +122,10 @@ bool MainWindow::event(QEvent *ev)
 
 void MainWindow::openTable (const QString& connectionName, const QString& tableName)
 {
-	EditTableWidget *w = new EditTableWidget (connectionName, tableName, this);
-
 	QMdiSubWindow *mdi = new QMdiSubWindow (this);
+
+	EditTableWidget *w = new EditTableWidget (connectionName, tableName, mdi);
+
 	mdi->setWidget (w);
 	mdi->setAttribute(Qt::WA_DeleteOnClose);
 	mdiArea->addSubWindow(mdi);
@@ -133,9 +134,11 @@ void MainWindow::openTable (const QString& connectionName, const QString& tableN
 
 void MainWindow::sqlEdit ()
 {
-	SqlQueryWidget *w = new SqlQueryWidget ("", this);
-
 	QMdiSubWindow *mdi = new QMdiSubWindow (this);
+
+	SqlQueryWidget *w = new SqlQueryWidget ("", mdi);
+	connect (databaseTree, SIGNAL (connectionsChanged ()), w, SLOT (connectionsChanged ()));
+
 	mdi->setWidget (w);
 	mdi->setAttribute(Qt::WA_DeleteOnClose);
 	mdiArea->addSubWindow(mdi);

@@ -74,6 +74,7 @@ private Q_SLOTS:
 
 Q_SIGNALS:
 	void openTable (const QString& connectionName, const QString& tableName);
+	void connectionsChanged ();
 };
 
 #endif //DATABASETREE_H
