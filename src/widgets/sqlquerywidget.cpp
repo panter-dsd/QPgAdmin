@@ -302,6 +302,7 @@ void SqlQueryWidget::updateTabCaptions ()
 
 void SqlQueryWidget::start ()
 {
+	outputModel->setQuery (QSqlQuery ());
 	if (connectionEdit->currentIndex () < 0) {
 		QMessageBox::critical (this, "", tr ("Choose connection"));
 		return;
