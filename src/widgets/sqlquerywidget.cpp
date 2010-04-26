@@ -306,7 +306,21 @@ void SqlQueryWidget::start ()
 
 	actionStart->setEnabled (false);
 	actionStop->setEnabled (true);
-	QueryThread *thread = new QueryThread (connectionEdit->currentText (), e->toPlainText (), this);
+
+	//Remove comments
+	QStringList l = e->toPlainText ().split ("\n");
+	int i = 0;
+	static const QRegExp commentRegexp ("^\\s*(--)"); 	
+
+	while (i < l.size ()) {
+		if (commentRegexp.indexIn (l.at (i), 0) != -1) {
+			l.removeAt (i);
+		} else {
+			i++;
+		}
+	}
+	
+	QueryThread *thread = new QueryThread (connectionEdit->currentText (), l.join ("\n"), this);
 	connect (thread, SIGNAL (finished ()), this, SLOT (queryFinished ()));
 	connect (actionStop, SIGNAL (triggered ()), thread, SLOT (terminate ()));
 	thread->start ();
@@ -347,7 +361,9 @@ void SqlQueryWidget::updateActions ()
 	if (!e)
 		return;
 
-	actionSave->setEnabled (e->document ()->isModified () || e->objectName ().isEmpty ());
+	actionSave->setEnabled (e->document ()->isModified ());
+	actionUndo->setEnabled (e->document ()->isUndoAvailable ());
+	actionRedo->setEnabled (e->document ()->isRedoAvailable ());
 }
 
 bool SqlQueryWidget::closeTab (int index)
