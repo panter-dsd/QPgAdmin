@@ -177,7 +177,7 @@ bool SqlQueryWidget::event(QEvent *ev)
 		}
 	}
 	if (ev->type () == QEvent::Timer) {
-        const auto elapsed = m_time.elapsed ();
+		const auto elapsed = m_time.elapsed ();
 		statusBar->showMessage (tr ("%1 secs (%2 msecs)").arg (elapsed / 1000).arg (elapsed));
 	}
 
