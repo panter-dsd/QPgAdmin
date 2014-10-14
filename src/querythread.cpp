@@ -12,15 +12,20 @@ QueryThread::QueryThread (const QString& connectionName, const QString& queryStr
 
 void QueryThread::run ()
 {
-	const QStringList& queryStrings = m_queryString.split (";");
+	const QStringList queryStrings = m_queryString.split (";");
+	std::all_of(queryStrings.begin(), queryStrings.end(),
+			[this] (const QString &queryString) {
+				const QString query = queryString.simplified();
+			    return query.isEmpty() || executeQuery (query.simplified());
+			});
+}
 
+bool QueryThread::executeQuery (const QString &queryString)
+{
 	QSqlQuery query (QSqlDatabase::database (m_connectionName));
 
-	foreach (const QString& queryString, queryStrings) {
-		const int result = query.exec (queryString.simplified ());
-		m_query = query; 
-		if (!result) {
-			break;
-		}
-	}
+	const int result = query.exec (queryString);
+	m_query = query;
+
+	return result;
 }
