@@ -190,7 +190,7 @@ QPlainTextEdit* SqlQueryWidget::addSqlEditor ()
 	connect (e, SIGNAL (modificationChanged (bool)), this, SLOT (updateTabCaptions ()));
 	sqlEdits << e;
 
-	SQLHighlighter *sqlhighlighter = new SQLHighlighter(e->document()); 
+	SQLHighlighter *sqlhighlighter = new SQLHighlighter(e->document());
 
 	const int index = inputTabs->addTab (e, tr ("Unnamed"));
 	inputTabs->setCurrentIndex (index);
@@ -200,7 +200,7 @@ QPlainTextEdit* SqlQueryWidget::addSqlEditor ()
 void SqlQueryWidget::open ()
 {
 	QSettings settings;
-	
+
 	const QStringList& fileNames = QFileDialog::getOpenFileNames (this,
 															tr ("Open file"),
 															settings.value ("SqlQueryWidget/OpenPath", "").toString (),
@@ -219,7 +219,7 @@ void SqlQueryWidget::open ()
 			return;
 		}
 		QTextStream stream (&file);
-		
+
 		QPlainTextEdit *e = addSqlEditor ();
 		e->setPlainText (stream.readAll ());
 		e->document ()->setModified (false);
@@ -238,7 +238,7 @@ bool SqlQueryWidget::save ()
 	const QString& fileName = e->objectName ();
 	if (fileName.isEmpty ()) {
 		return saveAs ();
-	}	
+	}
 
 	QFile file (fileName);
 	if (!file.open (QIODevice::WriteOnly)) {
@@ -283,7 +283,7 @@ void SqlQueryWidget::updateTabCaptions ()
 		QPlainTextEdit *e = qobject_cast<QPlainTextEdit*> (inputTabs->widget (i));
 		if (!e)
 			return;
-	
+
 		if (e->objectName ().isEmpty ()) {
 			QString text = tr ("Unnamed");
 			if (e->document ()->isModified ())
@@ -294,8 +294,8 @@ void SqlQueryWidget::updateTabCaptions ()
 			QString text = fi.fileName ();
 			if (e->document ()->isModified ())
 				text += " *";
-			inputTabs->setTabText (i, text);  
-			inputTabs->setTabToolTip (i, QDir::toNativeSeparators (fi.absoluteFilePath ()));  
+			inputTabs->setTabText (i, text);
+			inputTabs->setTabToolTip (i, QDir::toNativeSeparators (fi.absoluteFilePath ()));
 		}
 	}
 	updateActions ();
@@ -317,24 +317,40 @@ void SqlQueryWidget::start ()
 	actionStop->setEnabled (true);
 
 	//Remove comments
-	QStringList l = e->toPlainText ().split ("\n");
-	int i = 0;
-	static const QRegExp commentRegexp ("^\\s*(--)"); 	
+	const QStringList sqlQueryes = removeBlankLines(removeComments (e->toPlainText ().split ("\n")));
 
-	while (i < l.size ()) {
-		if (commentRegexp.indexIn (l.at (i), 0) != -1) {
-			l.removeAt (i);
-		} else {
-			i++;
-		}
-	}
-	
-	QueryThread *thread = new QueryThread (connectionEdit->currentText (), l.join ("\n"), this);
+	QueryThread *thread = new QueryThread (connectionEdit->currentText (), sqlQueryes.join ("\n"), this);
 	connect (thread, SIGNAL (finished ()), this, SLOT (queryFinished ()));
 	connect (actionStop, SIGNAL (triggered ()), thread, SLOT (terminate ()));
 	thread->start ();
 	m_timer = startTimer (10);
 	m_time.start ();
+}
+
+QStringList SqlQueryWidget::removeComments(const QStringList& sqlQueryes)
+{
+	static const QRegExp commentRegexp("^\\s*(--)");
+
+	QStringList result;
+	std::remove_copy_if(sqlQueryes.begin(), sqlQueryes.end(), std::back_inserter(result),
+			[](const QString &line) {
+			    return commentRegexp.indexIn(line, 0) != -1;
+			}
+	);
+
+	return result;
+}
+
+QStringList SqlQueryWidget::removeBlankLines(const QStringList& sqlQueryes)
+{
+	QStringList result;
+	std::remove_copy_if(sqlQueryes.begin(), sqlQueryes.end(), std::back_inserter(result),
+			[](const QString &line) {
+			    return line.isEmpty();
+			}
+	);
+
+	return result;
 }
 
 void SqlQueryWidget::queryFinished ()
@@ -386,14 +402,14 @@ bool SqlQueryWidget::closeTab (int index)
 		return false;
 
 	if (e->document ()->isModified ()) {
-		int res = QMessageBox::question (this, "", tr ("Tab \"%1\" is modified.\nSave?").arg (inputTabs->tabText (index)), 
+		int res = QMessageBox::question (this, "", tr ("Tab \"%1\" is modified.\nSave?").arg (inputTabs->tabText (index)),
 										 QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-		
+
 		if (res == QMessageBox::Cancel) {
 			return false;
 		}
-	
-		if (res == QMessageBox::Yes) { 
+
+		if (res == QMessageBox::Yes) {
 			if (!save ())
 				return false;
 		}
