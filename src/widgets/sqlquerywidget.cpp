@@ -177,7 +177,8 @@ bool SqlQueryWidget::event(QEvent *ev)
 		}
 	}
 	if (ev->type () == QEvent::Timer) {
-		statusBar->showMessage (tr ("%1 secs").arg (m_time.elapsed () / 100));
+        const auto elapsed = m_time.elapsed ();
+		statusBar->showMessage (tr ("%1 secs (%2 msecs)").arg (elapsed / 1000).arg (elapsed));
 	}
 
 	return QWidget::event(ev);
@@ -332,7 +333,7 @@ void SqlQueryWidget::start ()
 	connect (thread, SIGNAL (finished ()), this, SLOT (queryFinished ()));
 	connect (actionStop, SIGNAL (triggered ()), thread, SLOT (terminate ()));
 	thread->start ();
-	m_timer = startTimer (100);
+	m_timer = startTimer (10);
 	m_time.start ();
 }
 
