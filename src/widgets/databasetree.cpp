@@ -187,8 +187,7 @@ void DatabaseTree::treeContextMenu(const QPoint &point)
 	QTreeWidgetItem *item = tree->itemAt(point);
 	if (!item) {
 		menu.addAction(actionAddConnection);
-	}
-	else {
+	} else {
 		const QMap <QString, QVariant> &option = item->data(0, Qt::UserRole).value<QMap <QString, QVariant>> ();
 		if (option ["Type"].toString() == "Connection") {
 			actionEditConnection->setData(option ["Index"]);
@@ -242,8 +241,7 @@ void DatabaseTree::loadTree()
 		if (QSqlDatabase::database(item->text(0), false).isOpen()) {
 			loadDatabases(item);
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/connect_established.png"));
-		}
-		else {
+		} else {
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/connect_no.png"));
 			item->setExpanded(false);
 			qDeleteAll(item->takeChildren());
@@ -302,8 +300,7 @@ void DatabaseTree::loadDatabases(QTreeWidgetItem *parent)
 		if (QSqlDatabase::database(options ["ConnectionName"].toString() + "." + item->text(0), false).isOpen()) {
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/database.png"));
 			loadSchemes(item);
-		}
-		else {
+		} else {
 			item->setData(0, Qt::DecorationRole, QIcon(":/share/images/disconnected-database.png"));
 			item->setExpanded(false);
 			qDeleteAll(item->takeChildren());
@@ -554,8 +551,7 @@ void DatabaseTree::itemExpanded(QTreeWidgetItem *item)
 			if (!db.open()) {
 				QMessageBox::critical(this, "", db.lastError().text());
 				QSqlDatabase::removeDatabase(c.name);
-			}
-			else {
+			} else {
 				loadTree();
 				emit connectionsChanged();
 			}
@@ -575,8 +571,7 @@ void DatabaseTree::itemExpanded(QTreeWidgetItem *item)
 			if (!db.open()) {
 				QMessageBox::critical(this, "", db.lastError().text());
 				QSqlDatabase::removeDatabase(c.name + "."  + item->text(0));
-			}
-			else {
+			} else {
 				loadTree();
 				emit connectionsChanged();
 			}

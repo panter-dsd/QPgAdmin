@@ -290,8 +290,7 @@ void SqlQueryWidget::updateTabCaptions()
 			if (e->document()->isModified())
 				text += " *";
 			inputTabs_->setTabText(i, text);
-		}
-		else {
+		} else {
 			QFileInfo fi(e->objectName());
 			QString text = fi.fileName();
 			if (e->document()->isModified())
@@ -362,21 +361,20 @@ void SqlQueryWidget::queryFinished()
 	QueryThread *thread = qobject_cast <QueryThread *> (sender());
 	if (!thread)
 		return;
-	QSqlQuery query = thread->lastQuery();
+
+	const QSqlQuery &query = thread->lastQuery();
 	thread->deleteLater();
+
 	outputModel_->setQuery(query);
-	messagesEdit_->setPlainText(query.lastQuery());
+
 	if (query.lastError().isValid()) {
-		messagesEdit_->appendPlainText("\n\n-------------------------------------------------------\n\n");
-		messagesEdit_->appendPlainText(query.lastError().text());
+		messagesEdit_->setPlainText(query.lastError().text());
 		outputTabs_->setCurrentWidget(messagesEdit_);
-	}
-	else {
-		messagesEdit_->appendPlainText(tr("The query is successfully comlete for %1 secs").arg(time_.elapsed() / 100));
+	} else {
+		messagesEdit_->setPlainText(tr("The query is successfully comlete for %1 secs").arg(time_.elapsed() / 100));
 		if (outputModel_->rowCount() > 0) {
 			outputTabs_->setCurrentWidget(outputTable_);
-		}
-		else {
+		} else {
 			outputTabs_->setCurrentWidget(messagesEdit_);
 		}
 	}

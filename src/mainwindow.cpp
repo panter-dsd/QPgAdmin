@@ -118,8 +118,7 @@ void MainWindow::saveSettings()
 		settings.setValue("pos", pos());
 		settings.setValue("size", size());
 		settings.setValue("IsMaximized", false);
-	}
-	else
+	} else
 		settings.setValue("IsMaximized", true);
 	settings.setValue("State", saveState());
 	settings.endGroup();

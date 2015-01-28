@@ -106,8 +106,7 @@ void EditTableWidget::addIncludeFilter()
 
 	if (view->currentIndex().data(Qt::EditRole).isNull()) {
 		model->setFilter(filter + column + " IS NULL");
-	}
-	else {
+	} else {
 		model->setFilter(filter + column + "=" + data);
 	}
 
@@ -126,8 +125,7 @@ void EditTableWidget::addExcludeFilter()
 
 	if (view->currentIndex().data(Qt::EditRole).isNull()) {
 		model->setFilter(filter + column + " IS NOT NULL");
-	}
-	else {
+	} else {
 		model->setFilter(filter + column + " IS DISTINCT FROM " + data);
 	}
 	model->select();
