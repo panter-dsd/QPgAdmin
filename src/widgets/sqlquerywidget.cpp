@@ -24,97 +24,97 @@
 #include "sqlhighlighter.h"
 
 SqlQueryWidget::SqlQueryWidget(const QString &connectionName, QWidget *parent)
-	: QWidget(parent), m_connectionName(connectionName)
+	: QWidget(parent), connectionName_(connectionName)
 {
-	inputTabs = new QTabWidget(this);
-	inputTabs->setContextMenuPolicy(Qt::ActionsContextMenu);
-	inputTabs->setTabsClosable(true);
-	connect(inputTabs, SIGNAL(currentChanged(int)), this, SLOT(updateActions()));
-	connect(inputTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+	inputTabs_ = new QTabWidget(this);
+	inputTabs_->setContextMenuPolicy(Qt::ActionsContextMenu);
+	inputTabs_->setTabsClosable(true);
+	connect(inputTabs_, SIGNAL(currentChanged(int)), this, SLOT(updateActions()));
+	connect(inputTabs_, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
-	outputTabs = new QTabWidget(this);
+	outputTabs_ = new QTabWidget(this);
 
-	outputModel = new QSqlQueryModel(this);
+	outputModel_ = new QSqlQueryModel(this);
 
-	outputTable = new QTableView(this);
-	outputTable->setModel(outputModel);
-	outputTabs->addTab(outputTable, "");
+	outputTable_ = new QTableView(this);
+	outputTable_->setModel(outputModel_);
+	outputTabs_->addTab(outputTable_, "");
 
-	messagesEdit = new QPlainTextEdit(this);
-	messagesEdit->setReadOnly(true);
-	outputTabs->addTab(messagesEdit, "");
+	messagesEdit_ = new QPlainTextEdit(this);
+	messagesEdit_->setReadOnly(true);
+	outputTabs_->addTab(messagesEdit_, "");
 
-	toolBar = new QToolBar(this);
+	toolBar_ = new QToolBar(this);
 
-	statusBar = new QStatusBar(this);
+	statusBar_ = new QStatusBar(this);
 
-	splitter = new QSplitter(Qt::Vertical, this);
-	splitter->setObjectName("SPLITTER");
-	splitter->addWidget(inputTabs);
-	splitter->addWidget(outputTabs);
+	splitter_ = new QSplitter(Qt::Vertical, this);
+	splitter_->setObjectName("SPLITTER");
+	splitter_->addWidget(inputTabs_);
+	splitter_->addWidget(outputTabs_);
 
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 	mainLayout->setContentsMargins(0, 0, 0, 0);
-	mainLayout->addWidget(toolBar);
-	mainLayout->addWidget(splitter);
-	mainLayout->addWidget(statusBar);
+	mainLayout->addWidget(toolBar_);
+	mainLayout->addWidget(splitter_);
+	mainLayout->addWidget(statusBar_);
 	setLayout(mainLayout);
 
-	connectionEdit = new QComboBox(this);
-	connectionEdit->addItems(QSqlDatabase::connectionNames());
-	connectionEdit->setCurrentIndex(connectionEdit->findText(connectionName, Qt::MatchFixedString));
+	connectionEdit_ = new QComboBox(this);
+	connectionEdit_->addItems(QSqlDatabase::connectionNames());
+	connectionEdit_->setCurrentIndex(connectionEdit_->findText(connectionName, Qt::MatchFixedString));
 
-	actionAddSqlEditor = new QAction(this);
-	actionAddSqlEditor->setIcon(QIcon(":/share/images/add.png"));
-	connect(actionAddSqlEditor, SIGNAL(triggered()), this, SLOT(addSqlEditor()));
-	inputTabs->addAction(actionAddSqlEditor);
-	toolBar->addAction(actionAddSqlEditor);
+	actionAddSqlEditor_ = new QAction(this);
+	actionAddSqlEditor_->setIcon(QIcon(":/share/images/add.png"));
+	connect(actionAddSqlEditor_, SIGNAL(triggered()), this, SLOT(addSqlEditor()));
+	inputTabs_->addAction(actionAddSqlEditor_);
+	toolBar_->addAction(actionAddSqlEditor_);
 
-	actionOpen = new QAction(this);
-	actionOpen->setIcon(QIcon(":/share/images/open.png"));
-	actionOpen->setShortcut(QKeySequence::Open);
-	connect(actionOpen, SIGNAL(triggered()), this, SLOT(open()));
-	toolBar->addAction(actionOpen);
+	actionOpen_ = new QAction(this);
+	actionOpen_->setIcon(QIcon(":/share/images/open.png"));
+	actionOpen_->setShortcut(QKeySequence::Open);
+	connect(actionOpen_, SIGNAL(triggered()), this, SLOT(open()));
+	toolBar_->addAction(actionOpen_);
 
-	actionSave = new QAction(this);
-	actionSave->setIcon(QIcon(":/share/images/save.png"));
-	actionSave->setShortcut(QKeySequence::Save);
-	connect(actionSave, SIGNAL(triggered()), this, SLOT(save()));
-	toolBar->addAction(actionSave);
+	actionSave_ = new QAction(this);
+	actionSave_->setIcon(QIcon(":/share/images/save.png"));
+	actionSave_->setShortcut(QKeySequence::Save);
+	connect(actionSave_, SIGNAL(triggered()), this, SLOT(save()));
+	toolBar_->addAction(actionSave_);
 
-	actionSaveAs = new QAction(this);
-	actionSaveAs->setIcon(QIcon(":/share/images/save_as.png"));
-	actionSaveAs->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
-	connect(actionSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
-	toolBar->addAction(actionSaveAs);
+	actionSaveAs_ = new QAction(this);
+	actionSaveAs_->setIcon(QIcon(":/share/images/save_as.png"));
+	actionSaveAs_->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
+	connect(actionSaveAs_, SIGNAL(triggered()), this, SLOT(saveAs()));
+	toolBar_->addAction(actionSaveAs_);
 
-	toolBar->addSeparator();
+	toolBar_->addSeparator();
 
-	actionUndo = new QAction(this);
-	actionUndo->setIcon(QIcon(":/share/images/undo.png"));
-	connect(actionUndo, SIGNAL(triggered()), this, SLOT(undo()));
-	toolBar->addAction(actionUndo);
+	actionUndo_ = new QAction(this);
+	actionUndo_->setIcon(QIcon(":/share/images/undo.png"));
+	connect(actionUndo_, SIGNAL(triggered()), this, SLOT(undo()));
+	toolBar_->addAction(actionUndo_);
 
-	actionRedo = new QAction(this);
-	actionRedo->setIcon(QIcon(":/share/images/redo.png"));
-	connect(actionRedo, SIGNAL(triggered()), this, SLOT(redo()));
-	toolBar->addAction(actionRedo);
+	actionRedo_ = new QAction(this);
+	actionRedo_->setIcon(QIcon(":/share/images/redo.png"));
+	connect(actionRedo_, SIGNAL(triggered()), this, SLOT(redo()));
+	toolBar_->addAction(actionRedo_);
 
-	toolBar->addSeparator();
+	toolBar_->addSeparator();
 
-	actionStart = new QAction(this);
-	actionStart->setIcon(QIcon(":/share/images/start.png"));
-	actionStart->setShortcut(Qt::Key_F5);
-	connect(actionStart, SIGNAL(triggered()), this, SLOT(start()));
-	toolBar->addAction(actionStart);
+	actionStart_ = new QAction(this);
+	actionStart_->setIcon(QIcon(":/share/images/start.png"));
+	actionStart_->setShortcut(Qt::Key_F5);
+	connect(actionStart_, SIGNAL(triggered()), this, SLOT(start()));
+	toolBar_->addAction(actionStart_);
 
-	actionStop = new QAction(this);
-	actionStop->setIcon(QIcon(":/share/images/stop.png"));
-	actionStop->setEnabled(false);
-	toolBar->addAction(actionStop);
+	actionStop_ = new QAction(this);
+	actionStop_->setIcon(QIcon(":/share/images/stop.png"));
+	actionStop_->setEnabled(false);
+	toolBar_->addAction(actionStop_);
 
-	toolBar->addSeparator();
-	toolBar->addWidget(connectionEdit);
+	toolBar_->addSeparator();
+	toolBar_->addWidget(connectionEdit_);
 
 	loadSettings();
 	retranslateStrings();
@@ -130,17 +130,17 @@ void SqlQueryWidget::retranslateStrings()
 {
 	setWindowTitle(tr("SQL editor"));
 	updateTabCaptions();
-	outputTabs->setTabText(outputTabs->indexOf(outputTable), tr("Output table"));
-	outputTabs->setTabText(outputTabs->indexOf(messagesEdit), tr("Messages"));
+	outputTabs_->setTabText(outputTabs_->indexOf(outputTable_), tr("Output table"));
+	outputTabs_->setTabText(outputTabs_->indexOf(messagesEdit_), tr("Messages"));
 
-	actionAddSqlEditor->setText(tr("Add SQL editor"));
-	actionOpen->setText(tr("Open"));
-	actionSave->setText(tr("Save"));
-	actionSaveAs->setText(tr("Save as..."));
-	actionUndo->setText(tr("Undo"));
-	actionRedo->setText(tr("Redo"));
-	actionStart->setText(tr("Start"));
-	actionStop->setText(tr("Stop"));
+	actionAddSqlEditor_->setText(tr("Add SQL editor"));
+	actionOpen_->setText(tr("Open"));
+	actionSave_->setText(tr("Save"));
+	actionSaveAs_->setText(tr("Save as..."));
+	actionUndo_->setText(tr("Undo"));
+	actionRedo_->setText(tr("Redo"));
+	actionStart_->setText(tr("Start"));
+	actionStop_->setText(tr("Stop"));
 }
 
 void SqlQueryWidget::loadSettings()
@@ -148,7 +148,7 @@ void SqlQueryWidget::loadSettings()
 	QSettings settings;
 
 	settings.beginGroup("SqlQueryWidget");
-	splitter->restoreState(settings.value("State", "").toByteArray());
+	splitter_->restoreState(settings.value("State", "").toByteArray());
 	settings.endGroup();
 }
 
@@ -157,7 +157,7 @@ void SqlQueryWidget::saveSettings()
 	QSettings settings;
 
 	settings.beginGroup("SqlQueryWidget");
-	settings.setValue("State", splitter->saveState());
+	settings.setValue("State", splitter_->saveState());
 	settings.endGroup();
 
 	settings.sync();
@@ -169,7 +169,7 @@ bool SqlQueryWidget::event(QEvent *ev)
 		retranslateStrings();
 	}
 	if (ev->type() == QEvent::Close) {
-		while (inputTabs->count() > 0) {
+		while (inputTabs_->count() > 0) {
 			if (!closeTab(0)) {
 				ev->ignore();
 				return false;
@@ -177,8 +177,8 @@ bool SqlQueryWidget::event(QEvent *ev)
 		}
 	}
 	if (ev->type() == QEvent::Timer) {
-		const auto elapsed = m_time.elapsed();
-		statusBar->showMessage(tr("%1 secs (%2 msecs)").arg(elapsed / 1000).arg(elapsed));
+		const auto elapsed = time_.elapsed();
+		statusBar_->showMessage(tr("%1 secs (%2 msecs)").arg(elapsed / 1000).arg(elapsed));
 	}
 
 	return QWidget::event(ev);
@@ -188,13 +188,13 @@ QPlainTextEdit *SqlQueryWidget::addSqlEditor()
 {
 	QPlainTextEdit *e = new QPlainTextEdit(this);
 	connect(e, SIGNAL(modificationChanged(bool)), this, SLOT(updateTabCaptions()));
-	sqlEdits << e;
+	sqlEdits_ << e;
 
 	SQLHighlighter *sqlhighlighter = new SQLHighlighter(e->document());
 	Q_UNUSED(sqlhighlighter)
 
-	const int index = inputTabs->addTab(e, tr("Unnamed"));
-	inputTabs->setCurrentIndex(index);
+	const int index = inputTabs_->addTab(e, tr("Unnamed"));
+	inputTabs_->setCurrentIndex(index);
 	return e;
 }
 
@@ -232,7 +232,7 @@ void SqlQueryWidget::open()
 
 bool SqlQueryWidget::save()
 {
-	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs->currentWidget());
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs_->currentWidget());
 	if (!e)
 		return false;
 
@@ -257,7 +257,7 @@ bool SqlQueryWidget::save()
 
 bool SqlQueryWidget::saveAs()
 {
-	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs->currentWidget());
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs_->currentWidget());
 	if (!e)
 		return false;
 
@@ -280,8 +280,8 @@ bool SqlQueryWidget::saveAs()
 
 void SqlQueryWidget::updateTabCaptions()
 {
-	for (int i = 0, count = inputTabs->count(); i < count; i++) {
-		QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs->widget(i));
+	for (int i = 0, count = inputTabs_->count(); i < count; i++) {
+		QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs_->widget(i));
 		if (!e)
 			return;
 
@@ -289,15 +289,15 @@ void SqlQueryWidget::updateTabCaptions()
 			QString text = tr("Unnamed");
 			if (e->document()->isModified())
 				text += " *";
-			inputTabs->setTabText(i, text);
+			inputTabs_->setTabText(i, text);
 		}
 		else {
 			QFileInfo fi(e->objectName());
 			QString text = fi.fileName();
 			if (e->document()->isModified())
 				text += " *";
-			inputTabs->setTabText(i, text);
-			inputTabs->setTabToolTip(i, QDir::toNativeSeparators(fi.absoluteFilePath()));
+			inputTabs_->setTabText(i, text);
+			inputTabs_->setTabToolTip(i, QDir::toNativeSeparators(fi.absoluteFilePath()));
 		}
 	}
 	updateActions();
@@ -305,26 +305,26 @@ void SqlQueryWidget::updateTabCaptions()
 
 void SqlQueryWidget::start()
 {
-	outputModel->setQuery(QSqlQuery());
-	if (connectionEdit->currentIndex() < 0) {
+	outputModel_->setQuery(QSqlQuery());
+	if (connectionEdit_->currentIndex() < 0) {
 		QMessageBox::critical(this, "", tr("Choose connection"));
 		return;
 	}
 
-	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs->currentWidget());
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs_->currentWidget());
 	if (!e)
 		return;
 
-	actionStart->setEnabled(false);
-	actionStop->setEnabled(true);
+	actionStart_->setEnabled(false);
+	actionStop_->setEnabled(true);
 
 	//Remove comments
-	QueryThread *thread = new QueryThread(connectionEdit->currentText(), e->toPlainText(), this);
+	QueryThread *thread = new QueryThread(connectionEdit_->currentText(), e->toPlainText(), this);
 	connect(thread, SIGNAL(finished()), this, SLOT(queryFinished()));
-	connect(actionStop, SIGNAL(triggered()), thread, SLOT(terminate()));
+	connect(actionStop_, SIGNAL(triggered()), thread, SLOT(terminate()));
 	thread->start();
-	m_timer = startTimer(10);
-	m_time.start();
+	timer_ = startTimer(10);
+	time_.start();
 }
 
 QStringList SqlQueryWidget::removeComments(const QStringList &sqlQueryes)
@@ -355,62 +355,62 @@ QStringList SqlQueryWidget::removeBlankLines(const QStringList &sqlQueryes)
 
 void SqlQueryWidget::queryFinished()
 {
-	killTimer(m_timer);
-	actionStart->setEnabled(true);
-	actionStop->setEnabled(false);
+	killTimer(timer_);
+	actionStart_->setEnabled(true);
+	actionStop_->setEnabled(false);
 
 	QueryThread *thread = qobject_cast <QueryThread *> (sender());
 	if (!thread)
 		return;
 	QSqlQuery query = thread->lastQuery();
 	thread->deleteLater();
-	outputModel->setQuery(query);
-	messagesEdit->setPlainText(query.lastQuery());
+	outputModel_->setQuery(query);
+	messagesEdit_->setPlainText(query.lastQuery());
 	if (query.lastError().isValid()) {
-		messagesEdit->appendPlainText("\n\n-------------------------------------------------------\n\n");
-		messagesEdit->appendPlainText(query.lastError().text());
-		outputTabs->setCurrentWidget(messagesEdit);
+		messagesEdit_->appendPlainText("\n\n-------------------------------------------------------\n\n");
+		messagesEdit_->appendPlainText(query.lastError().text());
+		outputTabs_->setCurrentWidget(messagesEdit_);
 	}
 	else {
-		messagesEdit->appendPlainText(tr("The query is successfully comlete for %1 secs").arg(m_time.elapsed() / 100));
-		if (outputModel->rowCount() > 0) {
-			outputTabs->setCurrentWidget(outputTable);
+		messagesEdit_->appendPlainText(tr("The query is successfully comlete for %1 secs").arg(time_.elapsed() / 100));
+		if (outputModel_->rowCount() > 0) {
+			outputTabs_->setCurrentWidget(outputTable_);
 		}
 		else {
-			outputTabs->setCurrentWidget(messagesEdit);
+			outputTabs_->setCurrentWidget(messagesEdit_);
 		}
 	}
 }
 
 void SqlQueryWidget::connectionsChanged()
 {
-	const QString &currentConnection = connectionEdit->currentText();
-	connectionEdit->clear();
-	connectionEdit->addItems(QSqlDatabase::connectionNames());
-	connectionEdit->setCurrentIndex(connectionEdit->findText(currentConnection, Qt::MatchFixedString));
+	const QString &currentConnection = connectionEdit_->currentText();
+	connectionEdit_->clear();
+	connectionEdit_->addItems(QSqlDatabase::connectionNames());
+	connectionEdit_->setCurrentIndex(connectionEdit_->findText(currentConnection, Qt::MatchFixedString));
 }
 
 void SqlQueryWidget::updateActions()
 {
-	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs->currentWidget());
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs_->currentWidget());
 	if (!e)
 		return;
 
-	actionSave->setEnabled(e->document()->isModified());
-	actionUndo->setEnabled(e->document()->isUndoAvailable());
-	actionRedo->setEnabled(e->document()->isRedoAvailable());
+	actionSave_->setEnabled(e->document()->isModified());
+	actionUndo_->setEnabled(e->document()->isUndoAvailable());
+	actionRedo_->setEnabled(e->document()->isRedoAvailable());
 }
 
 bool SqlQueryWidget::closeTab(int index)
 {
-	inputTabs->setCurrentIndex(index);
+	inputTabs_->setCurrentIndex(index);
 
-	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs->widget(index));
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs_->widget(index));
 	if (!e)
 		return false;
 
 	if (e->document()->isModified()) {
-		int res = QMessageBox::question(this, "", tr("Tab \"%1\" is modified.\nSave?").arg(inputTabs->tabText(index)),
+		int res = QMessageBox::question(this, "", tr("Tab \"%1\" is modified.\nSave?").arg(inputTabs_->tabText(index)),
 										QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
 		if (res == QMessageBox::Cancel) {
@@ -429,7 +429,7 @@ bool SqlQueryWidget::closeTab(int index)
 
 void SqlQueryWidget::undo()
 {
-	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs->currentWidget());
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs_->currentWidget());
 	if (!e)
 		return;
 
@@ -438,7 +438,7 @@ void SqlQueryWidget::undo()
 
 void SqlQueryWidget::redo()
 {
-	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs->currentWidget());
+	QPlainTextEdit *e = qobject_cast<QPlainTextEdit *> (inputTabs_->currentWidget());
 	if (!e)
 		return;
 

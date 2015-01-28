@@ -43,34 +43,9 @@ class SqlQueryWidget : public QWidget
 {
 	Q_OBJECT
 
-private:
-	QString m_connectionName;
-	QTime m_time;
-	int m_timer;
-
-	QTabWidget *inputTabs;
-	QTabWidget *outputTabs;
-	QList<QPlainTextEdit *> sqlEdits;
-	QPlainTextEdit *messagesEdit;
-	QTableView *outputTable;
-	QSqlQueryModel *outputModel;
-	QToolBar *toolBar;
-	QSplitter *splitter;
-	QComboBox *connectionEdit;
-	QStatusBar *statusBar;
-
-	QAction *actionAddSqlEditor;
-	QAction *actionOpen;
-	QAction *actionSave;
-	QAction *actionSaveAs;
-	QAction *actionStart;
-	QAction *actionStop;
-	QAction *actionUndo;
-	QAction *actionRedo;
-
 public:
-	SqlQueryWidget(const QString &connectionName = "", QWidget *parent = 0);
-	~SqlQueryWidget();
+	explicit SqlQueryWidget(const QString &connectionName = QString::null, QWidget *parent = nullptr);
+	virtual ~SqlQueryWidget();
 
 private:
 	void loadSettings();
@@ -94,11 +69,38 @@ private Q_SLOTS:
 	void undo();
 
 	void redo();
+
 public Q_SLOTS:
 	void connectionsChanged();
 	void updateActions();
 
 	bool closeTab(int index);
+
+
+private:
+	QString connectionName_;
+	QTime time_;
+	int timer_;
+
+	QTabWidget *inputTabs_;
+	QTabWidget *outputTabs_;
+	QList<QPlainTextEdit *> sqlEdits_;
+	QPlainTextEdit *messagesEdit_;
+	QTableView *outputTable_;
+	QSqlQueryModel *outputModel_;
+	QToolBar *toolBar_;
+	QSplitter *splitter_;
+	QComboBox *connectionEdit_;
+	QStatusBar *statusBar_;
+
+	QAction *actionAddSqlEditor_;
+	QAction *actionOpen_;
+	QAction *actionSave_;
+	QAction *actionSaveAs_;
+	QAction *actionStart_;
+	QAction *actionStop_;
+	QAction *actionUndo_;
+	QAction *actionRedo_;
 };
 
 #endif //SQLQUERYWIDGET_H
