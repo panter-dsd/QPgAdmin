@@ -17,9 +17,9 @@
 * Foundation, Inc., 51 Franklin St, Fifth Floor,
 * Boston, MA 02110-1301 USA
 *-------------------------------------------------------------------
-* Project:		QPgAdmin
-* Author:		PanteR
-* Contact:		panter.dsd@gmail.com
+* Project:      QPgAdmin
+* Author:       PanteR
+* Contact:      panter.dsd@gmail.com
 *******************************************************************/
 
 #ifndef EDITTABLEWIDGET_H
@@ -34,7 +34,8 @@ class QAction;
 
 #include <QtGui/QWidget>
 
-class EditTableWidget : public QWidget {
+class EditTableWidget : public QWidget
+{
 	Q_OBJECT
 
 private:
@@ -48,19 +49,19 @@ private:
 	QAction *actionAddExcludeFilter;
 
 public:
-	EditTableWidget (const QString& connectionName, const QString& tableName, QWidget *parent = 0);
-	~EditTableWidget ();
+	EditTableWidget(const QString &connectionName, const QString &tableName, QWidget *parent = 0);
+	~EditTableWidget();
 
 private:
 	void retranslateStrings();
-	QString dataForFilter (const QModelIndex& index);
+	QString dataForFilter(const QModelIndex &index);
 
 protected:
 	bool event(QEvent *ev);
 
 private Q_SLOTS:
-	void addIncludeFilter ();
-	void addExcludeFilter ();
+	void addIncludeFilter();
+	void addExcludeFilter();
 };
 
 #endif //EDITTABLEWIDGET_H

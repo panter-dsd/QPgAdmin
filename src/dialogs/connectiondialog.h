@@ -9,7 +9,8 @@ class QComboBox;
 
 #include <QtGui/QDialog>
 
-class ConnectionDialog : public QDialog {
+class ConnectionDialog : public QDialog
+{
 	Q_OBJECT
 
 private:
@@ -34,28 +35,28 @@ private:
 	QCheckBox *savePasswordBox;
 
 public:
-	ConnectionDialog(QWidget * parent = 0, Qt::WindowFlags f = Qt::WindowSystemMenuHint);
+	ConnectionDialog(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowSystemMenuHint);
 	virtual ~ConnectionDialog()
 	{}
 
-	QString connectionName () const;
-	void setConnectionName (const QString& value);
+	QString connectionName() const;
+	void setConnectionName(const QString &value);
 
-	QString host () const;
-	void setHost (const QString& value);
+	QString host() const;
+	void setHost(const QString &value);
 
-	int port () const;
-	void setPort (int value);
+	int port() const;
+	void setPort(int value);
 
-	QString maintenanceBase () const;
-	void setMaintenanceBase (const QString& value);
+	QString maintenanceBase() const;
+	void setMaintenanceBase(const QString &value);
 
-	QString userName () const;
-	void setUserName (const QString& value);
+	QString userName() const;
+	void setUserName(const QString &value);
 
-	QString password () const;
-	void setPassword (const QString& value);
+	QString password() const;
+	void setPassword(const QString &value);
 
-	bool isSavePassword () const;
+	bool isSavePassword() const;
 };
 #endif

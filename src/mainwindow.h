@@ -17,9 +17,9 @@
 * Foundation, Inc., 51 Franklin St, Fifth Floor,
 * Boston, MA 02110-1301 USA
 *-------------------------------------------------------------------
-* Project:		QPgAdmin
-* Author:		PanteR
-* Contact:		panter.dsd@gmail.com
+* Project:      QPgAdmin
+* Author:       PanteR
+* Contact:      panter.dsd@gmail.com
 *******************************************************************/
 
 #ifndef MAINWINDOW_H
@@ -50,7 +50,7 @@ private:
 	QAction *actionShowHideDatabaseTree;
 
 public:
-	MainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
+	MainWindow(QWidget *parent = 0, Qt::WFlags f = 0);
 	~MainWindow();
 
 private:
@@ -62,8 +62,8 @@ protected:
 	bool event(QEvent *ev);
 
 private Q_SLOTS:
-	void openTable (const QString& connectionName, const QString& tableName);
-	void sqlEdit ();
+	void openTable(const QString &connectionName, const QString &tableName);
+	void sqlEdit();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

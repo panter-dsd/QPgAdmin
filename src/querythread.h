@@ -29,28 +29,29 @@
 
 #include <QtSql/QSqlQuery>
 
-class QueryThread : public QThread {
+class QueryThread : public QThread
+{
 	Q_OBJECT
+
+public:
+	QueryThread(const QString &connectionName, const QString &queryString, QObject *parent = 0);
+	virtual ~QueryThread();
+
+	QSqlQuery lastQuery();
+
+protected:
+	virtual void run();
+
+private:
+	Q_DISABLE_COPY(QueryThread)
+
+	bool executeQuery(const QString &queryString);
 
 private:
 	QString m_connectionName;
 	QString m_queryString;
 
 	QSqlQuery m_query;
-
-public:
-	QueryThread (const QString& connectionName, const QString& queryString, QObject* parent = 0);
-	virtual ~QueryThread ()
-	  {}
-
-	QSqlQuery lastQuery ()
-	{ return m_query;}
-
-protected:
-	void run();
-
-private:
-	bool executeQuery (const QString &queryString);
 };
 
 #endif //QUERYTHREAD_H

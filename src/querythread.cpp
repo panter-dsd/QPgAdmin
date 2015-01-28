@@ -4,27 +4,34 @@
 
 #include "querythread.h"
 
-QueryThread::QueryThread (const QString& connectionName, const QString& queryString, QObject* parent)
-	: QThread (parent), m_connectionName (connectionName), m_queryString (queryString)
+QueryThread::QueryThread(const QString &connectionName, const QString &queryString, QObject *parent)
+	: QThread(parent)
+	, m_connectionName(connectionName)
+	, m_queryString(queryString)
 {
 
 }
 
-void QueryThread::run ()
+QueryThread::~QueryThread()
 {
-	const QStringList queryStrings = m_queryString.split (";");
-	std::all_of(queryStrings.begin(), queryStrings.end(),
-			[this] (const QString &queryString) {
-				const QString query = queryString.simplified();
-			    return query.isEmpty() || executeQuery (query.simplified());
-			});
+
 }
 
-bool QueryThread::executeQuery (const QString &queryString)
+void QueryThread::run()
 {
-	QSqlQuery query (QSqlDatabase::database (m_connectionName));
+	executeQuery(m_queryString);
+}
 
-	const int result = query.exec (queryString);
+QSqlQuery QueryThread::lastQuery()
+{
+	return m_query;
+}
+
+bool QueryThread::executeQuery(const QString &queryString)
+{
+	QSqlQuery query(QSqlDatabase::database(m_connectionName));
+
+	const int result = query.exec(queryString);
 	m_query = query;
 
 	return result;

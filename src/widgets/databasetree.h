@@ -17,9 +17,9 @@
 * Foundation, Inc., 51 Franklin St, Fifth Floor,
 * Boston, MA 02110-1301 USA
 *-------------------------------------------------------------------
-* Project:		QPgAdmin
-* Author:		PanteR
-* Contact:		panter.dsd@gmail.com
+* Project:      QPgAdmin
+* Author:       PanteR
+* Contact:      panter.dsd@gmail.com
 *******************************************************************/
 
 #ifndef DATABASETREE_H
@@ -31,7 +31,8 @@ class QAction;
 
 #include <QtGui/QWidget>
 
-class DatabaseTree : public QWidget {
+class DatabaseTree : public QWidget
+{
 	Q_OBJECT
 
 private:
@@ -53,32 +54,34 @@ private:
 
 	QList<Connection> connections;
 public:
-	DatabaseTree (QWidget *parent);
-	~DatabaseTree ();
+	DatabaseTree(QWidget *parent);
+	~DatabaseTree();
+
+	QString currentConnection() const;
 
 private:
 	void loadSettings();
 	void saveSettings();
 	void retranslateStrings();
-	void loadTree ();
-	void loadDatabases (QTreeWidgetItem *parent);
-	void loadSchemes (QTreeWidgetItem *parent);
-	void loadTables (QTreeWidgetItem *parent);
-	void loadViews (QTreeWidgetItem *parent);
-	void loadSequences (QTreeWidgetItem *parent);
+	void loadTree();
+	void loadDatabases(QTreeWidgetItem *parent);
+	void loadSchemes(QTreeWidgetItem *parent);
+	void loadTables(QTreeWidgetItem *parent);
+	void loadViews(QTreeWidgetItem *parent);
+	void loadSequences(QTreeWidgetItem *parent);
 
 private Q_SLOTS:
-	void addConnection ();
-	void editConnection ();
-	void closeConnection ();
-	void treeContextMenu (const QPoint& point);
+	void addConnection();
+	void editConnection();
+	void closeConnection();
+	void treeContextMenu(const QPoint &point);
 
-	void itemExpanded (QTreeWidgetItem *item);
-	void itemActivated (QTreeWidgetItem *item, int column);
+	void itemExpanded(QTreeWidgetItem *item);
+	void itemActivated(QTreeWidgetItem *item, int column);
 
 Q_SIGNALS:
-	void openTable (const QString& connectionName, const QString& tableName);
-	void connectionsChanged ();
+	void openTable(const QString &connectionName, const QString &tableName);
+	void connectionsChanged();
 };
 
 #endif //DATABASETREE_H

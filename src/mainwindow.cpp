@@ -17,9 +17,9 @@
 * Foundation, Inc., 51 Franklin St, Fifth Floor,
 * Boston, MA 02110-1301 USA
 *-------------------------------------------------------------------
-* Project:		QPgAdmin
-* Author:		PanteR
-* Contact:		panter.dsd@gmail.com
+* Project:      QPgAdmin
+* Author:       PanteR
+* Contact:      panter.dsd@gmail.com
 *******************************************************************/
 
 #include <QtCore/QSettings>
@@ -38,40 +38,40 @@
 #include "edittablewidget.h"
 #include "sqlquerywidget.h"
 
-MainWindow::MainWindow(QWidget* parent, Qt::WFlags f)
-		: QMainWindow(parent, f)
+MainWindow::MainWindow(QWidget *parent, Qt::WFlags f)
+	: QMainWindow(parent, f)
 {
-	mdiArea = new QMdiArea (this);
+	mdiArea = new QMdiArea(this);
 	setCentralWidget(mdiArea);
 
-	databaseTree = new DatabaseTree (this);
-	connect (databaseTree, SIGNAL (openTable (QString, QString)), this, SLOT (openTable (QString, QString)));
+	databaseTree = new DatabaseTree(this);
+	connect(databaseTree, SIGNAL(openTable(QString, QString)), this, SLOT(openTable(QString, QString)));
 
-	databaseTreeDock = new QDockWidget (this);
+	databaseTreeDock = new QDockWidget(this);
 	databaseTreeDock->setObjectName("TREE_DOCK");
-	databaseTreeDock->setAllowedAreas (Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+	databaseTreeDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	databaseTreeDock->setWidget(databaseTree);
 	addDockWidget(Qt::LeftDockWidgetArea, databaseTreeDock);
 
-	QMenuBar *mainMenu = new QMenuBar (this);
-	setMenuBar (mainMenu);
+	QMenuBar *mainMenu = new QMenuBar(this);
+	setMenuBar(mainMenu);
 
-	instrumentsMenu = new QMenu (this);
-	mainMenu->addMenu (instrumentsMenu);
+	instrumentsMenu = new QMenu(this);
+	mainMenu->addMenu(instrumentsMenu);
 
-	viewMenu = new QMenu (this);
-	mainMenu->addMenu (viewMenu);
+	viewMenu = new QMenu(this);
+	mainMenu->addMenu(viewMenu);
 
-	actionSqlEdit = new QAction (this);
-	connect (actionSqlEdit, SIGNAL (triggered ()), this, SLOT (sqlEdit ()));
-	instrumentsMenu->addAction (actionSqlEdit);
+	actionSqlEdit = new QAction(this);
+	connect(actionSqlEdit, SIGNAL(triggered()), this, SLOT(sqlEdit()));
+	instrumentsMenu->addAction(actionSqlEdit);
 
-	actionShowHideDatabaseTree = new QAction (this);
-	actionShowHideDatabaseTree->setShortcut (Qt::CTRL + Qt::Key_E);
-	actionShowHideDatabaseTree->setCheckable (true);
-	actionShowHideDatabaseTree->setChecked (true);
-	connect (actionShowHideDatabaseTree, SIGNAL (toggled (bool)), databaseTreeDock, SLOT (setShown (bool)));
-	viewMenu->addAction (actionShowHideDatabaseTree);
+	actionShowHideDatabaseTree = new QAction(this);
+	actionShowHideDatabaseTree->setShortcut(Qt::CTRL + Qt::Key_E);
+	actionShowHideDatabaseTree->setCheckable(true);
+	actionShowHideDatabaseTree->setChecked(true);
+	connect(actionShowHideDatabaseTree, SIGNAL(toggled(bool)), databaseTreeDock, SLOT(setShown(bool)));
+	viewMenu->addAction(actionShowHideDatabaseTree);
 
 	loadSettings();
 	retranslateStrings();
@@ -84,13 +84,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::retranslateStrings()
 {
-	databaseTreeDock->setWindowTitle (databaseTree->windowTitle ());
+	databaseTreeDock->setWindowTitle(databaseTree->windowTitle());
 
-	instrumentsMenu->setTitle (tr ("Instruments"));
-	viewMenu->setTitle (tr ("View"));
+	instrumentsMenu->setTitle(tr("Instruments"));
+	viewMenu->setTitle(tr("View"));
 
-	actionSqlEdit->setText ("SQL editor");
-	actionShowHideDatabaseTree->setText (tr ("Show database tree"));
+	actionSqlEdit->setText("SQL editor");
+	actionShowHideDatabaseTree->setText(tr("Show database tree"));
 }
 
 void MainWindow::loadSettings()
@@ -118,7 +118,8 @@ void MainWindow::saveSettings()
 		settings.setValue("pos", pos());
 		settings.setValue("size", size());
 		settings.setValue("IsMaximized", false);
-	} else
+	}
+	else
 		settings.setValue("IsMaximized", true);
 	settings.setValue("State", saveState());
 	settings.endGroup();
@@ -132,11 +133,11 @@ bool MainWindow::event(QEvent *ev)
 		retranslateStrings();
 	}
 
-	if (ev->type () == QEvent::Close) {
-		QList <QMdiSubWindow*> l = findChildren <QMdiSubWindow*> ();
-		foreach (QMdiSubWindow *w, l) {
-			if (!w->close ()) {
-				ev->ignore ();
+	if (ev->type() == QEvent::Close) {
+		QList <QMdiSubWindow *> l = findChildren <QMdiSubWindow *> ();
+		foreach(QMdiSubWindow * w, l) {
+			if (!w->close()) {
+				ev->ignore();
 				return false;
 			}
 		}
@@ -145,27 +146,27 @@ bool MainWindow::event(QEvent *ev)
 	return QMainWindow::event(ev);
 }
 
-void MainWindow::openTable (const QString& connectionName, const QString& tableName)
+void MainWindow::openTable(const QString &connectionName, const QString &tableName)
 {
-	QMdiSubWindow *mdi = new QMdiSubWindow (this);
+	QMdiSubWindow *mdi = new QMdiSubWindow(this);
 
-	EditTableWidget *w = new EditTableWidget (connectionName, tableName, mdi);
+	EditTableWidget *w = new EditTableWidget(connectionName, tableName, mdi);
 
-	mdi->setWidget (w);
+	mdi->setWidget(w);
 	mdi->setAttribute(Qt::WA_DeleteOnClose);
 	mdiArea->addSubWindow(mdi);
-	mdi->show ();
+	mdi->show();
 }
 
-void MainWindow::sqlEdit ()
+void MainWindow::sqlEdit()
 {
-	QMdiSubWindow *mdi = new QMdiSubWindow (this);
+	QMdiSubWindow *mdi = new QMdiSubWindow(this);
 
-	SqlQueryWidget *w = new SqlQueryWidget ("", mdi);
-	connect (databaseTree, SIGNAL (connectionsChanged ()), w, SLOT (connectionsChanged ()));
+	SqlQueryWidget *w = new SqlQueryWidget(databaseTree->currentConnection(), mdi);
+	connect(databaseTree, SIGNAL(connectionsChanged()), w, SLOT(connectionsChanged()));
 
-	mdi->setWidget (w);
+	mdi->setWidget(w);
 	mdi->setAttribute(Qt::WA_DeleteOnClose);
 	mdiArea->addSubWindow(mdi);
-	mdi->show ();
+	mdi->show();
 }

@@ -17,9 +17,9 @@
 * Foundation, Inc., 51 Franklin St, Fifth Floor,
 * Boston, MA 02110-1301 USA
 *-------------------------------------------------------------------
-* Project:		QPgAdmin
-* Author:		PanteR
-* Contact:		panter.dsd@gmail.com
+* Project:      QPgAdmin
+* Author:       PanteR
+* Contact:      panter.dsd@gmail.com
 *******************************************************************/
 
 #include <QtCore/QTextCodec>
@@ -34,7 +34,7 @@
 
 #define ApplicationVersion "0.0.0.0"
 
-int main(int argc, char ** argv)
+int main(int argc, char **argv)
 {
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("System"));
 
@@ -50,7 +50,7 @@ int main(int argc, char ** argv)
 	app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
 
 	MainWindow win;
-	win.setWindowTitle(app.applicationName()+" "+app.applicationVersion());
+	win.setWindowTitle(app.applicationName() + " " + app.applicationVersion());
 
 	win.show();
 

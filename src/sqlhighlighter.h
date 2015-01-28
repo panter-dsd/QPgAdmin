@@ -17,9 +17,9 @@
 * Foundation, Inc., 51 Franklin St, Fifth Floor,
 * Boston, MA 02110-1301 USA
 *-------------------------------------------------------------------
-* Project:		QPgAdmin
-* Author:		PanteR
-* Contact:		panter.dsd@gmail.com
+* Project:      QPgAdmin
+* Author:       PanteR
+* Contact:      panter.dsd@gmail.com
 *******************************************************************/
 
 #ifndef SQLHIGHLIGHTER_H
@@ -33,15 +33,13 @@ class QTextDocument;
 
 class SQLHighlighter : public QSyntaxHighlighter
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    SQLHighlighter(QTextDocument *parent = 0);
+	SQLHighlighter(QTextDocument *parent = 0);
 
 protected:
-    void highlightBlock(const QString &text);
-
-private:
+	void highlightBlock(const QString &text);
 };
 
 #endif

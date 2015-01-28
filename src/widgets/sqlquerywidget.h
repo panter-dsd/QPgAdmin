@@ -39,7 +39,8 @@ class QStatusBar;
 
 #include <QtGui/QWidget>
 
-class SqlQueryWidget : public QWidget {
+class SqlQueryWidget : public QWidget
+{
 	Q_OBJECT
 
 private:
@@ -49,7 +50,7 @@ private:
 
 	QTabWidget *inputTabs;
 	QTabWidget *outputTabs;
-	QList<QPlainTextEdit*> sqlEdits;
+	QList<QPlainTextEdit *> sqlEdits;
 	QPlainTextEdit *messagesEdit;
 	QTableView *outputTable;
 	QSqlQueryModel *outputModel;
@@ -68,36 +69,36 @@ private:
 	QAction *actionRedo;
 
 public:
-	SqlQueryWidget (const QString& connectionName = "", QWidget *parent = 0);
-	~SqlQueryWidget ();
+	SqlQueryWidget(const QString &connectionName = "", QWidget *parent = 0);
+	~SqlQueryWidget();
 
 private:
 	void loadSettings();
 	void saveSettings();
-	void retranslateStrings ();
+	void retranslateStrings();
 
-	static QStringList removeComments(const QStringList& sqlQueryes);
-	static QStringList removeBlankLines(const QStringList& sqlQueryes);
+	static QStringList removeComments(const QStringList &sqlQueryes);
+	static QStringList removeBlankLines(const QStringList &sqlQueryes);
 
 protected:
 
 	bool event(QEvent *ev);
 private Q_SLOTS:
-	void updateTabCaptions ();
-	QPlainTextEdit* addSqlEditor ();
-	void open ();
-	bool save ();
-	bool saveAs ();
-	void start ();
-	void queryFinished ();
-	void undo ();
+	void updateTabCaptions();
+	QPlainTextEdit *addSqlEditor();
+	void open();
+	bool save();
+	bool saveAs();
+	void start();
+	void queryFinished();
+	void undo();
 
-	void redo ();
+	void redo();
 public Q_SLOTS:
-	void connectionsChanged ();
-	void updateActions ();
+	void connectionsChanged();
+	void updateActions();
 
-	bool closeTab (int index);
+	bool closeTab(int index);
 };
 
 #endif //SQLQUERYWIDGET_H
