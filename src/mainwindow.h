@@ -37,6 +37,25 @@ class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 
+public:
+	MainWindow(QWidget *parent = 0, Qt::WFlags f = 0);
+	~MainWindow();
+
+protected:
+	bool event(QEvent *ev);
+
+private:
+	Q_DISABLE_COPY(MainWindow)
+
+	void loadSettings();
+	void saveSettings();
+	void retranslateStrings();
+	void addWindow(QWidget *widget);
+
+private Q_SLOTS:
+	void openTable(const QString &connectionName, const QString &tableName);
+	void sqlEdit();
+
 private:
 	QMdiArea *mdiArea;
 
@@ -48,22 +67,6 @@ private:
 
 	QAction *actionSqlEdit;
 	QAction *actionShowHideDatabaseTree;
-
-public:
-	MainWindow(QWidget *parent = 0, Qt::WFlags f = 0);
-	~MainWindow();
-
-private:
-	void loadSettings();
-	void saveSettings();
-	void retranslateStrings();
-
-protected:
-	bool event(QEvent *ev);
-
-private Q_SLOTS:
-	void openTable(const QString &connectionName, const QString &tableName);
-	void sqlEdit();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

@@ -32,6 +32,7 @@
 #include <QtGui/QDockWidget>
 #include <QtGui/QMdiArea>
 #include <QtGui/QMdiSubWindow>
+#include <QtGui/QVBoxLayout>
 
 #include "mainwindow.h"
 #include "databasetree.h"
@@ -147,25 +148,35 @@ bool MainWindow::event(QEvent *ev)
 
 void MainWindow::openTable(const QString &connectionName, const QString &tableName)
 {
-	QMdiSubWindow *mdi = new QMdiSubWindow(this);
-
-	EditTableWidget *w = new EditTableWidget(connectionName, tableName, mdi);
-
-	mdi->setWidget(w);
-	mdi->setAttribute(Qt::WA_DeleteOnClose);
-	mdiArea->addSubWindow(mdi);
-	mdi->show();
+	addWindow(new EditTableWidget(connectionName, tableName));
 }
 
 void MainWindow::sqlEdit()
 {
+	SqlQueryWidget *w = new SqlQueryWidget(databaseTree->currentConnection());
+	connect(databaseTree, SIGNAL(connectionsChanged()), w, SLOT(connectionsChanged()));
+	addWindow(w);
+}
+
+void MainWindow::addWindow(QWidget *widget)
+{/*
 	QMdiSubWindow *mdi = new QMdiSubWindow(this);
 
-	SqlQueryWidget *w = new SqlQueryWidget(databaseTree->currentConnection(), mdi);
-	connect(databaseTree, SIGNAL(connectionsChanged()), w, SLOT(connectionsChanged()));
-
-	mdi->setWidget(w);
+	widget->setParent(mdi);
+	mdi->setWidget(widget);
 	mdi->setAttribute(Qt::WA_DeleteOnClose);
 	mdiArea->addSubWindow(mdi);
 	mdi->show();
+	*/
+
+	QDialog *dialog = new QDialog (this);
+
+	widget->setParent (dialog);
+
+	QVBoxLayout *layout = new QVBoxLayout;
+	layout->addWidget (widget);
+	dialog->setLayout (layout);
+
+	dialog->setAttribute (Qt::WA_DeleteOnClose);
+	dialog->show ();
 }
