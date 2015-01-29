@@ -40,6 +40,11 @@ public:
 
 protected:
 	void highlightBlock(const QString &text);
+
+private:
+	Q_DISABLE_COPY(SQLHighlighter)
+
+	void setFormatByRegExp(const QRegExp &re, const QString &text, const QColor& color);
 };
 
 #endif
